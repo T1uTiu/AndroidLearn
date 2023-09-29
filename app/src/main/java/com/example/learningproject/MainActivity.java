@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         );
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         TextView textView = new TextView(this);
-        textView.setText("Hello World");
+        textView.setText(R.string.hello_world);
         textView.setTextColor(Color.BLUE);
         textView.setTextSize(18);
         relativeLayout.addView(textView, params);
