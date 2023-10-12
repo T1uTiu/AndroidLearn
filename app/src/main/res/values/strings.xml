@@ -5,4 +5,5 @@
     <string name="hello">Hello</string>
     <string name="jnu">JNU</string>
     <string name="change_text">Change Text</string>
+    <string name="book_title_text">Title</string>
 </resources>

@@ -5,6 +5,7 @@
     android:id="@+id/book_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:longClickable="true"
     android:orientation="horizontal">
 
     <ImageView
@@ -16,7 +17,7 @@
         android:contentDescription="@string/hello"
         android:maxWidth="200dp"
         android:maxHeight="200dp"
-        app:srcCompat="@drawable/book_no_name"
+        app:srcCompat="@drawable/book_2"
         tools:ignore="ImageContrastCheck" />
 
     <TextView

@@ -1,6 +1,8 @@
 package com.example.learningproject.data;
 
-public class Book {
+import java.io.Serializable;
+
+public class Book implements Serializable {
     int coverResourceId;
     String title;
     public Book(int coverResourceId, String title){
