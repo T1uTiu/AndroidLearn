@@ -6,25 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:longClickable="true"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="16dp"
+    tools:ignore="UseCompoundDrawables">
 
     <ImageView
         android:id="@+id/image_view_book_cover"
         android:layout_width="200dip"
         android:layout_height="200dip"
-        android:layout_gravity="center"
-        android:layout_weight="1"
         android:contentDescription="@string/hello"
-        android:maxWidth="200dp"
-        android:maxHeight="200dp"
-        app:srcCompat="@drawable/book_2"
-        tools:ignore="ImageContrastCheck" />
+        app:srcCompat="@drawable/book_no_name" />
 
     <TextView
         android:id="@+id/text_view_book_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"
         android:text="@string/hello" />
 </LinearLayout>
