@@ -12,7 +12,7 @@
         android:theme="@style/Theme.LearningProject"
         tools:targetApi="31">
         <activity
-            android:name=".ModifyItemActivity"
+            android:name=".BookDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".RecycleViewTest"

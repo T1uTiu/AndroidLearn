@@ -1,5 +1,7 @@
 package com.example.learningproject;
 
+import static android.app.Activity.RESULT_OK;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,43 +25,56 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.learningproject.data.Book;
+import com.example.learningproject.data.BookList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class RecycleViewTest extends AppCompatActivity {
-    List<Book> bookList;
-    public List<Book> getBookList() {
-        return bookList;
-    }
-    ActivityResultLauncher<String> launcher;
 
-    public ActivityResultLauncher<String> getLauncher() {
-        return launcher;
+    BookList bookList;
+    ActivityResultLauncher<Bundle> insertBookLauncher;
+    ActivityResultLauncher<Bundle> updateBookLauncher;
+
+    public ActivityResultLauncher<Bundle> getInsertBookLauncher() {
+        return insertBookLauncher;
+    }
+    public ActivityResultLauncher<Bundle> getUpdateBookLauncher() {
+        return updateBookLauncher;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycle_view_test);
-        bookList = new ArrayList<>(Arrays.asList(
-                new Book(R.drawable.book_1, "信息安全数学基础（第2版）"),
-                new Book(R.drawable.book_no_name, "创新工程实践"),
-                new Book(R.drawable.book_2, "软件项目管理案例教程（第4版）")
-        ));
+        bookList = new BookList();
+        bookList.loadFileData(this);
 
-        BookAdapter bookAdapter = new BookAdapter(getBookList(), this);
+        //region RecyclerView
+        BookAdapter bookAdapter = new BookAdapter(bookList, this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         RecyclerView recyclerView = findViewById(R.id.recycle_view_books);
         recyclerView.setAdapter(bookAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        launcher = registerForActivityResult(new InsertActivityResultContract(), result -> {
-            assert result != null;
-            getBookList().add(result);
-            bookAdapter.notifyItemInserted(getBookList().size()-1);
+        //endregion
+
+        insertBookLauncher = registerForActivityResult(new BookDetailActivityResultContract(), result -> {
+            if(result != null){
+                bookList.getList().add((Book) result.getSerializable("book"));
+                bookAdapter.notifyItemInserted(bookList.getList().size()-1);
+                bookList.saveFileData(this);
+            }
+
         });
+        updateBookLauncher = registerForActivityResult(new BookDetailActivityResultContract(), result ->{
+            if(result != null){
+                int position = result.getInt("position");
+                Book b = (Book) result.getSerializable("book");
+                bookList.getList().get(position).setTitle(b.getTitle());
+                bookAdapter.notifyItemChanged(position);
+                bookList.saveFileData(this);
+            }
+        });
+
     }
 }
 class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
@@ -100,7 +116,7 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
                     onInsertClick();
                     break;
                 case 2:
-                    System.out.println("Click update");
+                    onUpdateClick();
                     break;
                 case 3:
                     onDeleteClick();
@@ -109,18 +125,35 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
             return true;
         }
         void onInsertClick(){
-            activity.getLauncher().launch("insert");
+            Bundle param = new Bundle();
+            param.putInt("type", 0);
+            activity.getInsertBookLauncher().launch(param);
         }
         void onDeleteClick(){
             int idx = getAdapterPosition();
-            bookList.remove(idx);
-            notifyItemRemoved(idx);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setMessage("您确定要删除记录吗")
+                    .setPositiveButton(R.string.ok_btn, (dialogInterface, i) -> {
+                        bookList.getList().remove(idx);
+                        notifyItemRemoved(idx);
+                        bookList.saveFileData(activity);
+                    })
+                    .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+            builder.show();
+
+        }
+        void onUpdateClick(){
+            int position = getAdapterPosition();
+            Bundle param = new Bundle();
+            param.putInt("type", 1);
+            param.putInt("position", position);
+            param.putSerializable("book", bookList.getList().get(position));
+            activity.getUpdateBookLauncher().launch(param);
         }
     }
-    List<Book> bookList;
+    BookList bookList;
     RecycleViewTest activity;
-
-    public BookAdapter(List<Book> bookList, RecycleViewTest activity){
+    public BookAdapter(BookList bookList, RecycleViewTest activity){
         this.bookList = bookList;
         this.activity = activity;
     }
@@ -134,29 +167,30 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull BookAdapter.ViewHolder holder, int position) {
-        holder.getTitleView().setText(bookList.get(position).getTitle());
-        holder.getCoverView().setImageResource(bookList.get(position).getCoverResourceId());
+        holder.getTitleView().setText(bookList.getList().get(position).getTitle());
+        holder.getCoverView().setImageResource(bookList.getList().get(position).getCoverResourceId());
     }
 
     @Override
     public int getItemCount() {
-        return bookList.size();
+        return bookList.getList().size();
     }
 }
 
-class InsertActivityResultContract extends ActivityResultContract<String, Book>{
-
+class BookDetailActivityResultContract extends ActivityResultContract<Bundle, Bundle>{
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, String s) {
-        Intent intent = new Intent(context, ModifyItemActivity.class);
-        intent.putExtra("type", s);
+    public Intent createIntent(@NonNull Context context, Bundle param) {
+        Intent intent = new Intent(context, BookDetailsActivity.class);
+        intent.putExtra("param", param);
         return intent;
     }
 
     @Override
-    public Book parseResult(int i, @Nullable Intent intent) {
-        assert intent != null;
-        return (Book)intent.getSerializableExtra("book");
+    public Bundle parseResult(int i, @Nullable Intent intent) {
+        if(i == RESULT_OK && intent != null ){
+            return intent.getBundleExtra("res");
+        }
+        return null;
     }
 }

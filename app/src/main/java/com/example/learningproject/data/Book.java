@@ -1,5 +1,7 @@
 package com.example.learningproject.data;
 
+import com.example.learningproject.R;
+
 import java.io.Serializable;
 
 public class Book implements Serializable {
@@ -9,6 +11,10 @@ public class Book implements Serializable {
         this.coverResourceId = coverResourceId;
         this.title = title;
     }
+    public Book(){
+        this.coverResourceId = R.drawable.book_no_name;
+        this.title = "Hello World";
+    }
 
     public int getCoverResourceId() {
         return coverResourceId;
@@ -16,5 +22,9 @@ public class Book implements Serializable {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
