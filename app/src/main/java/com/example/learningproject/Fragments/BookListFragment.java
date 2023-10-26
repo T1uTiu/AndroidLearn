@@ -1,20 +1,21 @@
-package com.example.learningproject;
+package com.example.learningproject.Fragments;
 
 import static android.app.Activity.RESULT_OK;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,16 +25,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.learningproject.BookDetailsActivity;
+import com.example.learningproject.R;
 import com.example.learningproject.data.Book;
 import com.example.learningproject.data.BookList;
 
-
-public class RecycleViewTest extends AppCompatActivity {
-
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link BookListFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class BookListFragment extends Fragment {
     BookList bookList;
     ActivityResultLauncher<Bundle> insertBookLauncher;
     ActivityResultLauncher<Bundle> updateBookLauncher;
-
+    View rootView;
     public ActivityResultLauncher<Bundle> getInsertBookLauncher() {
         return insertBookLauncher;
     }
@@ -41,27 +47,49 @@ public class RecycleViewTest extends AppCompatActivity {
         return updateBookLauncher;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recycle_view_test);
-        bookList = new BookList();
-        bookList.loadFileData(this);
+    public View getRootView() {
+        return rootView;
+    }
 
+    public BookList getBookList() {
+        return bookList;
+    }
+
+    public BookListFragment() {
+        bookList = new BookList();
+    }
+
+    public static BookListFragment newInstance() {
+        BookListFragment fragment = new BookListFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView =  inflater.inflate(R.layout.fragment_book_list, container, false);
+        bookList.loadFileData(rootView.getContext());
         //region RecyclerView
-        BookAdapter bookAdapter = new BookAdapter(bookList, this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        RecyclerView recyclerView = findViewById(R.id.recycle_view_books);
+        BookAdapter bookAdapter = new BookAdapter(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(rootView.getContext());
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycle_view_books);
         recyclerView.setAdapter(bookAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(rootView.getContext(),DividerItemDecoration.VERTICAL));
         //endregion
 
         insertBookLauncher = registerForActivityResult(new BookDetailActivityResultContract(), result -> {
             if(result != null){
                 bookList.getList().add((Book) result.getSerializable("book"));
                 bookAdapter.notifyItemInserted(bookList.getList().size()-1);
-                bookList.saveFileData(this);
+                bookList.saveFileData(rootView.getContext());
             }
 
         });
@@ -71,10 +99,10 @@ public class RecycleViewTest extends AppCompatActivity {
                 Book b = (Book) result.getSerializable("book");
                 bookList.getList().get(position).setTitle(b.getTitle());
                 bookAdapter.notifyItemChanged(position);
-                bookList.saveFileData(this);
+                bookList.saveFileData(rootView.getContext());
             }
         });
-
+        return rootView;
     }
 }
 class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
@@ -131,12 +159,12 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
         }
         void onDeleteClick(){
             int idx = getAdapterPosition();
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity.getRootView().getContext());
             builder.setMessage("您确定要删除记录吗")
                     .setPositiveButton(R.string.ok_btn, (dialogInterface, i) -> {
                         bookList.getList().remove(idx);
                         notifyItemRemoved(idx);
-                        bookList.saveFileData(activity);
+                        bookList.saveFileData(activity.getRootView().getContext());
                     })
                     .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
             builder.show();
@@ -152,10 +180,10 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
         }
     }
     BookList bookList;
-    RecycleViewTest activity;
-    public BookAdapter(BookList bookList, RecycleViewTest activity){
-        this.bookList = bookList;
+    BookListFragment activity;
+    public BookAdapter(BookListFragment activity){
         this.activity = activity;
+        this.bookList = activity.getBookList();
     }
 
     @NonNull
@@ -177,7 +205,7 @@ class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder>{
     }
 }
 
-class BookDetailActivityResultContract extends ActivityResultContract<Bundle, Bundle>{
+class BookDetailActivityResultContract extends ActivityResultContract<Bundle, Bundle> {
     @NonNull
     @Override
     public Intent createIntent(@NonNull Context context, Bundle param) {

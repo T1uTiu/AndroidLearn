@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:longClickable="true"
     android:orientation="horizontal"
-    android:padding="16dp"
     tools:ignore="UseCompoundDrawables">
 
     <ImageView
