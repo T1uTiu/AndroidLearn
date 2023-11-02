@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.learningproject.Fragments.BookListFragment;
+import com.example.learningproject.Fragments.MapFragment;
 import com.example.learningproject.Fragments.WebViewFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (position){
                     case 0:
                         return BookListFragment.newInstance();
+                    case 2:
+                        return MapFragment.newInstance();
                     default:
                         return WebViewFragment.newInstance(position);
                 }
