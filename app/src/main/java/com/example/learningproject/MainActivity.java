@@ -9,7 +9,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.learningproject.Fragments.BookListFragment;
@@ -30,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(position);
         }
     };
-    final String[] tabs = {"图书", "新闻", "地图"};
+    final String[] tabLabels = {"任务", "奖励", "统计", "我的"};
+    final int[] tabIcons = {R.drawable.ic_task_list, R.drawable.ic_reward, R.drawable.ic_statistics, R.drawable.ic_me};
 
 
     @Override
@@ -55,14 +58,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public int getItemCount() {
-                return tabs.length;
+                return tabLabels.length;
             }
         });
         viewPager2.registerOnPageChangeCallback(changeCallback);
 
         mediator = new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
-            //这里可以自定义TabView
-            TextView tabView = new TextView(MainActivity.this);
+            View tabView = LayoutInflater.from(this).inflate(R.layout.layout_bottom_tab_item, tabLayout, false);
+            TextView tabLabel = tabView.findViewById(R.id.bottom_tab_label);
+            ImageView tabIcon = tabView.findViewById(R.id.bottom_tab_icon);
+            tabLabel.setText(tabLabels[position]);
+            tabIcon.setImageResource(tabIcons[position]);
 
             int[][] states = new int[2][];
             states[0] = new int[]{android.R.attr.state_selected};
@@ -70,9 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
             int[] colors = new int[]{activeColor, normalColor};
             ColorStateList colorStateList = new ColorStateList(states, colors);
-            tabView.setText(tabs[position]);
-            tabView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            tabView.setTextColor(colorStateList);
+            tabLabel.setTextColor(colorStateList);
+            tabIcon.setImageTintList(colorStateList);
 
             tab.setCustomView(tabView);
         });
