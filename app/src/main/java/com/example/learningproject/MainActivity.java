@@ -14,8 +14,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.learningproject.Fragments.BookListFragment;
 import com.example.learningproject.Fragments.MapFragment;
+import com.example.learningproject.Fragments.Task.TaskFragment;
 import com.example.learningproject.Fragments.WebViewFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public Fragment createFragment(int position) {
                 switch (position){
                     case 0:
-                        return BookListFragment.newInstance();
+                        return TaskFragment.newInstance();
                     case 2:
                         return MapFragment.newInstance();
                     default:
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         viewPager2.registerOnPageChangeCallback(changeCallback);
+        viewPager2.setUserInputEnabled(false);
 
         mediator = new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
             View tabView = LayoutInflater.from(this).inflate(R.layout.layout_bottom_tab_item, tabLayout, false);

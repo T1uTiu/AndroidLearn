@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="60dip"
+    android:paddingLeft="5dip"
+    android:paddingTop="5dp"
+    android:paddingRight="5dip"
+    android:paddingBottom="5dp">
+
+    <CheckBox
+        android:id="@+id/task_check"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:ignore="VisualLintButtonSize" />
+
+    <TextView
+        android:id="@+id/task_name_text"
+        android:layout_width="167dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/hello"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/task_progress_text"
+        android:layout_width="34dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/progress"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/task_score_text"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/point"
+        android:textColor="#0099FD"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:ignore="TextSizeCheck" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_weight="1"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/hello"
+        android:minWidth="48dp"
+        android:minHeight="32dp"
+        app:srcCompat="@drawable/ic_push_pin"
+        tools:ignore="DuplicateSpeakableTextCheck" />
+
+</LinearLayout>

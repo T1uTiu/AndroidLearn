@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidLearn</string>
+    <string name="app_name">PlayList</string>
     <string name="hello_world">Hello World</string>
     <string name="hello_android">你好，Android</string>
     <string name="hello">Hello</string>
@@ -10,4 +10,6 @@
     <string name="ok_btn">确定</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="progress">1/10</string>
+    <string name="point">+10</string>
 </resources>
