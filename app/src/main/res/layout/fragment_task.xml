@@ -17,6 +17,19 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/hello" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/task_add_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="66dp"
+        android:clickable="true"
+        android:contentDescription="@string/ok_btn"
+        android:focusable="true"
+        android:src="@drawable/ic_add"
+        android:tint="#FFFFFF"
+        tools:ignore="ImageContrastCheck" />
 
 
 </FrameLayout>

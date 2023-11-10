@@ -3,7 +3,7 @@ package com.example.learningproject.data.Task;
 public enum TaskType {
     EVERYDAY(0),
     EVERYWEEK(1),
-    SIMPLE(2);
+    NORMAL(2);
 
     private int value;
     private TaskType(int value){
@@ -19,7 +19,7 @@ public enum TaskType {
             case 1:
                 return EVERYWEEK;
             case 2:
-                return SIMPLE;
+                return NORMAL;
             default:
                 return null;
         }

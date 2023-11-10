@@ -2,8 +2,6 @@ package com.example.learningproject.data.Task;
 
 import android.content.Context;
 
-import com.example.learningproject.data.Book;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,7 +32,7 @@ public class TaskManager {
                 return dayTaskList;
             case EVERYWEEK:
                 return weekTaskList;
-            case SIMPLE:
+            case NORMAL:
                 return onetimeTaskList;
             default:
                 return null;
@@ -52,7 +50,7 @@ public class TaskManager {
                 case EVERYWEEK:
                     weekTaskList = (ArrayList<Task>) ois.readObject();
                     break;
-                case SIMPLE:
+                case NORMAL:
                     onetimeTaskList = (ArrayList<Task>) ois.readObject();
                     break;
             }
@@ -73,7 +71,7 @@ public class TaskManager {
                 case EVERYWEEK:
                     oos.writeObject(weekTaskList);
                     break;
-                case SIMPLE:
+                case NORMAL:
                     oos.writeObject(onetimeTaskList);
                     break;
             }

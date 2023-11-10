@@ -1,18 +1,23 @@
 package com.example.learningproject.Fragments.Task;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.learningproject.Fragments.WebViewFragment;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.example.learningproject.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -24,7 +29,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class TaskFragment extends Fragment {
     ViewPager2 viewPager2;
     TabLayout tabLayout;
+    FloatingActionButton fab;
     final String[] tabLabels = {"每日任务", "每周任务", "普通任务"};
+    ActivityResultLauncher<Bundle> taskDetailLauncher;
     public TaskFragment() {
         // Required empty public constructor
     }
@@ -45,6 +52,7 @@ public class TaskFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_task, container, false);
         viewPager2 = rootView.findViewById(R.id.view_pager);
         tabLayout = rootView.findViewById(R.id.tab_layout);
+        fab = rootView.findViewById(R.id.task_add_btn);
 
         viewPager2.setAdapter(new FragmentStateAdapter(getParentFragmentManager(), getLifecycle()) {
             @NonNull
@@ -59,10 +67,37 @@ public class TaskFragment extends Fragment {
             }
         });
 
-        TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
-            tab.setText(tabLabels[position]);
-        });
+        TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(tabLabels[position]));
         mediator.attach();
+
+        taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result -> {
+            if (result != null) {
+                System.out.println(result);
+            }
+        });
+        fab.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("type", 0);
+            taskDetailLauncher.launch(bundle);
+        });
+
         return rootView;
+    }
+}
+class TaskDetailResultContract extends ActivityResultContract<Bundle, Bundle>{
+    @NonNull
+    @Override
+    public Intent createIntent(@NonNull Context context, Bundle input) {
+        Intent intent = new Intent(context, TaskDetail.class);
+        intent.putExtra("param", input);
+        return intent;
+    }
+
+    @Override
+    public Bundle parseResult(int resultCode, @Nullable Intent intent) {
+        if(resultCode == Activity.RESULT_OK && intent != null){
+            return intent.getBundleExtra("res");
+        }
+        return null;
     }
 }
