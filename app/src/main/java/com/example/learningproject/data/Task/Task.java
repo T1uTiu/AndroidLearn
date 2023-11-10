@@ -1,6 +1,6 @@
 package com.example.learningproject.data.Task;
 
-public class Task {
+public class Task implements java.io.Serializable{
     String name;
     int score;
     int times;

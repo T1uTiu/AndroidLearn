@@ -1,38 +1,88 @@
 package com.example.learningproject.Fragments.Task;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.learningproject.R;
+import com.example.learningproject.data.Task.Task;
+import com.example.learningproject.data.Task.TaskManager;
 import com.example.learningproject.data.Task.TaskType;
 
 public class TaskDetail extends AppCompatActivity {
     Spinner taskTypeSpinner;
-    TaskType[] taskTypes = {TaskType.EVERYDAY, TaskType.EVERYWEEK, TaskType.NORMAL};
+    Button okBtn;
+    EditText taskNameEdit;
+    EditText taskScoreEdit;
+    EditText taskTimesEdit;
+    String[] taskTypes = {TaskType.EVERYDAY.name(), TaskType.EVERYWEEK.name(), TaskType.NORMAL.name()};
+    String[] titles = {"添加任务", "编辑任务"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
+        Intent intent = getIntent();
+        Bundle param = intent.getBundleExtra("param");
+        int method = param.getInt("method");
+
+        getSupportActionBar().setTitle(titles[method]);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         taskTypeSpinner = findViewById(R.id.detail_task_type_spinner);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, taskTypes);
+        taskNameEdit = findViewById(R.id.detail_task_name_edit);
+        taskScoreEdit = findViewById(R.id.detail_task_score_edit);
+        taskTimesEdit = findViewById(R.id.detail_task_times_edit);
+        okBtn = findViewById(R.id.detail_task_ok_btn);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, taskTypes);
         taskTypeSpinner.setAdapter(adapter);
-        taskTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                System.out.print(i);
+
+        okBtn.setOnClickListener(view -> {
+            String taskRawName = taskNameEdit.getText().toString();
+            String taskRawScore = taskScoreEdit.getText().toString();
+            String taskRawTimes = taskTimesEdit.getText().toString();
+            if(taskRawName.isEmpty() || taskRawScore.isEmpty()){
+                Toast.makeText(this, "任务名称和分数不能为空", Toast.LENGTH_SHORT).show();
+            }else{
+                int taskScore = Integer.parseInt(taskRawScore);
+                int taskTimes = taskRawTimes.isEmpty() ? 1 : Integer.parseInt(taskRawTimes);
+                int taskRawType = (int)taskTypeSpinner.getSelectedItemId();
+                TaskType taskType = TaskType.valueOf(taskRawType);
+                Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
+                assert taskType != null;
+                TaskManager.getInstance().addTask(taskType, newTask);
+                TaskManager.getInstance().saveFileData(this, taskType);
+                finish();
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
+
         });
+    }
 
-
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

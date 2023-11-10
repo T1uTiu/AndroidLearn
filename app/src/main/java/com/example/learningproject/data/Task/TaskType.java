@@ -5,7 +5,7 @@ public enum TaskType {
     EVERYWEEK(1),
     NORMAL(2);
 
-    private int value;
+    private final int value;
     private TaskType(int value){
         this.value = value;
     }
@@ -24,4 +24,6 @@ public enum TaskType {
                 return null;
         }
     }
+
+
 }

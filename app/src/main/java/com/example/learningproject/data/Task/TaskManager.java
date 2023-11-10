@@ -81,4 +81,17 @@ public class TaskManager {
             e.printStackTrace();
         }
     }
+    public void addTask(TaskType type, Task task){
+        switch (type){
+            case EVERYDAY:
+                dayTaskList.add(task);
+                break;
+            case EVERYWEEK:
+                weekTaskList.add(task);
+                break;
+            case NORMAL:
+                onetimeTaskList.add(task);
+                break;
+        }
+    }
 }

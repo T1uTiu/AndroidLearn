@@ -17,6 +17,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.learningproject.R;
+import com.example.learningproject.data.Task.TaskManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -71,20 +72,21 @@ public class TaskFragment extends Fragment {
         mediator.attach();
 
         taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result -> {
-            if (result != null) {
-                System.out.println(result);
+            if (result == Activity.RESULT_OK) {
+                assert viewPager2.getAdapter() != null;
+                viewPager2.getAdapter().notify();
             }
         });
         fab.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putInt("type", 0);
+            bundle.putInt("method", 0);
             taskDetailLauncher.launch(bundle);
         });
 
         return rootView;
     }
 }
-class TaskDetailResultContract extends ActivityResultContract<Bundle, Bundle>{
+class TaskDetailResultContract extends ActivityResultContract<Bundle, Integer>{
     @NonNull
     @Override
     public Intent createIntent(@NonNull Context context, Bundle input) {
@@ -94,10 +96,7 @@ class TaskDetailResultContract extends ActivityResultContract<Bundle, Bundle>{
     }
 
     @Override
-    public Bundle parseResult(int resultCode, @Nullable Intent intent) {
-        if(resultCode == Activity.RESULT_OK && intent != null){
-            return intent.getBundleExtra("res");
-        }
-        return null;
+    public Integer parseResult(int resultCode, @Nullable Intent intent) {
+        return resultCode;
     }
 }
