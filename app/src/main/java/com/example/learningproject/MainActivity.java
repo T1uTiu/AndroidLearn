@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,8 +20,13 @@ import android.widget.TextView;
 import com.example.learningproject.Fragments.MapFragment;
 import com.example.learningproject.Fragments.Task.TaskFragment;
 import com.example.learningproject.Fragments.WebViewFragment;
+import com.example.learningproject.Receiver.DayTaskRefreshReceiver;
+import com.example.learningproject.Manager.TaskManager;
+import com.example.learningproject.Utils.TaskRefreshAlarm;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private final int activeColor = Color.parseColor("#ff678f");
@@ -84,8 +92,9 @@ public class MainActivity extends AppCompatActivity {
         });
         mediator.attach();
 
-
-
+        TaskManager.getInstance().loadFileData(this);
+        TaskRefreshAlarm.setDayTaskRefreshAlarm(this);
+        TaskRefreshAlarm.setWeekTaskRefreshAlarm(this);
     }
 
 }

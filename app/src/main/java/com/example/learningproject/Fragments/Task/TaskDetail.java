@@ -4,25 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
-
 import com.example.learningproject.R;
-import com.example.learningproject.data.Task.Task;
-import com.example.learningproject.data.Task.TaskManager;
-import com.example.learningproject.data.Task.TaskType;
+import com.example.learningproject.Model.Task.Task;
+import com.example.learningproject.Manager.TaskManager;
+import com.example.learningproject.Model.Task.TaskType;
 
 public class TaskDetail extends AppCompatActivity {
     Spinner taskTypeSpinner;
@@ -66,7 +59,7 @@ public class TaskDetail extends AppCompatActivity {
                 TaskType taskType = TaskType.valueOf(taskRawType);
                 Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
                 assert taskType != null;
-                TaskManager.getInstance().addTask(taskType, newTask);
+                TaskManager.getInstance().addTask(newTask);
                 TaskManager.getInstance().saveFileData(this, taskType);
                 finish();
             }

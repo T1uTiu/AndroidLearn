@@ -1,4 +1,4 @@
-package com.example.learningproject.data;
+package com.example.learningproject.Model;
 
 import com.example.learningproject.R;
 

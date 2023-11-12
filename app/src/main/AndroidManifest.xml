@@ -40,6 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".Receiver.DayTaskRefreshReceiver" />
+        <receiver android:name=".Receiver.WeekTaskRefreshReceiver"/>
+        <service android:name=".Service.DayTaskRefreshService"/>
+        <service android:name=".Service.WeekTaskRefreshService"/>
     </application>
 
 </manifest>

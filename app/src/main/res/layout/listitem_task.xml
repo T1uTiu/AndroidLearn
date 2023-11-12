@@ -6,6 +6,7 @@
     android:layout_height="60dip"
     android:paddingLeft="5dip"
     android:paddingTop="5dp"
+    android:longClickable="true"
     android:paddingRight="5dip"
     android:paddingBottom="5dp">
 
@@ -42,17 +43,5 @@
         android:textSize="20sp"
         android:textStyle="bold"
         tools:ignore="TextSizeCheck" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="46dp"
-        android:layout_weight="1"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/hello"
-        android:minWidth="48dp"
-        android:minHeight="32dp"
-        app:srcCompat="@drawable/ic_push_pin"
-        tools:ignore="DuplicateSpeakableTextCheck" />
 
 </LinearLayout>

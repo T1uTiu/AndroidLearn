@@ -17,7 +17,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.learningproject.R;
-import com.example.learningproject.data.Task.TaskManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -31,7 +30,7 @@ public class TaskFragment extends Fragment {
     ViewPager2 viewPager2;
     TabLayout tabLayout;
     FloatingActionButton fab;
-    final String[] tabLabels = {"每日任务", "每周任务", "普通任务"};
+    final String[] tabLabels = {"今日任务", "本周任务", "普通任务"};
     ActivityResultLauncher<Bundle> taskDetailLauncher;
     public TaskFragment() {
         // Required empty public constructor
@@ -67,14 +66,13 @@ public class TaskFragment extends Fragment {
                 return tabLabels.length;
             }
         });
-
         TabLayoutMediator mediator = new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(tabLabels[position]));
         mediator.attach();
 
         taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result -> {
             if (result == Activity.RESULT_OK) {
                 assert viewPager2.getAdapter() != null;
-                viewPager2.getAdapter().notify();
+                viewPager2.getAdapter().notifyDataSetChanged();
             }
         });
         fab.setOnClickListener(v -> {
@@ -85,6 +83,7 @@ public class TaskFragment extends Fragment {
 
         return rootView;
     }
+
 }
 class TaskDetailResultContract extends ActivityResultContract<Bundle, Integer>{
     @NonNull

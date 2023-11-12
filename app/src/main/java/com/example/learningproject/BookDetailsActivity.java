@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.learningproject.data.Book;
+import com.example.learningproject.Model.Book;
 
 public class BookDetailsActivity extends AppCompatActivity {
     int position;

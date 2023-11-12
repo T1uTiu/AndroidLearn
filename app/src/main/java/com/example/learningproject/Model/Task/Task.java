@@ -1,6 +1,9 @@
-package com.example.learningproject.data.Task;
+package com.example.learningproject.Model.Task;
 
-public class Task implements java.io.Serializable{
+import androidx.annotation.NonNull;
+
+public class Task implements java.io.Serializable, Cloneable {
+    int id;
     String name;
     int score;
     int times;
@@ -13,6 +16,10 @@ public class Task implements java.io.Serializable{
         this.times = times;
         this.type = type;
         this.currentTimes = 0;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getScore() {
@@ -35,11 +42,15 @@ public class Task implements java.io.Serializable{
         return type;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setPoint(int score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -53,5 +64,15 @@ public class Task implements java.io.Serializable{
 
     public void setType(TaskType type) {
         this.type = type;
+    }
+
+    @NonNull
+    @Override
+    public Task clone() {
+        try {
+            return (Task) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

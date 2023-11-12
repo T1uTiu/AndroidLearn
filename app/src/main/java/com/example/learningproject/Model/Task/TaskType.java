@@ -1,4 +1,4 @@
-package com.example.learningproject.data.Task;
+package com.example.learningproject.Model.Task;
 
 public enum TaskType {
     EVERYDAY(0),

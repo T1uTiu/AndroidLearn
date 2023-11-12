@@ -1,0 +1,20 @@
+package com.example.learningproject.Service;
+
+import android.app.IntentService;
+import android.content.Intent;
+
+import androidx.annotation.Nullable;
+
+import com.example.learningproject.Manager.TaskManager;
+
+public class DayTaskRefreshService extends IntentService {
+
+    public DayTaskRefreshService() {
+        super("RefreshEveryDayWeekTaskService");
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        TaskManager.getInstance().refreshDayTask();
+    }
+}

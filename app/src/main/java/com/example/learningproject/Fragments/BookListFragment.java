@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import com.example.learningproject.BookDetailsActivity;
 import com.example.learningproject.R;
-import com.example.learningproject.data.Book;
-import com.example.learningproject.data.BookList;
+import com.example.learningproject.Model.Book;
+import com.example.learningproject.Model.BookList;
 
 /**
  * A simple {@link Fragment} subclass.
