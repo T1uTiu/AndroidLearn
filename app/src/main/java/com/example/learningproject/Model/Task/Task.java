@@ -3,7 +3,7 @@ package com.example.learningproject.Model.Task;
 import androidx.annotation.NonNull;
 
 public class Task implements java.io.Serializable, Cloneable {
-    int id;
+    long id;
     String name;
     int score;
     int times;
@@ -18,7 +18,7 @@ public class Task implements java.io.Serializable, Cloneable {
         this.currentTimes = 0;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -42,7 +42,7 @@ public class Task implements java.io.Serializable, Cloneable {
         return type;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

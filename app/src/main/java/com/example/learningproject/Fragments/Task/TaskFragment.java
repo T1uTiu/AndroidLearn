@@ -70,10 +70,6 @@ public class TaskFragment extends Fragment {
         mediator.attach();
 
         taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result -> {
-            if (result == Activity.RESULT_OK) {
-                assert viewPager2.getAdapter() != null;
-                viewPager2.getAdapter().notifyDataSetChanged();
-            }
         });
         fab.setOnClickListener(v -> {
             Bundle bundle = new Bundle();

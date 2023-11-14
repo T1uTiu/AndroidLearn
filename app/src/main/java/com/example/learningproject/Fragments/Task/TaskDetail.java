@@ -60,7 +60,6 @@ public class TaskDetail extends AppCompatActivity {
                 Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
                 assert taskType != null;
                 TaskManager.getInstance().addTask(newTask);
-                TaskManager.getInstance().saveFileData(this, taskType);
                 finish();
             }
 

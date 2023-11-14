@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.example.learningproject.Interface.TaskChangeObserver;
 import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
@@ -31,9 +32,10 @@ import java.util.List;
  * Use the {@link TaskListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements TaskChangeObserver {
     private TaskType taskType;
     View rootView;
+    TaskAdapter adapter;
     public TaskListFragment() {
         // Required empty public constructor
     }
@@ -52,6 +54,7 @@ public class TaskListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             taskType = TaskType.valueOf(getArguments().getInt("taskType"));
+            TaskManager.getInstance().attachTaskChangeObserver(this);
         }
     }
 
@@ -65,11 +68,19 @@ public class TaskListFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(rootView.getContext(),DividerItemDecoration.VERTICAL));
         // TaskManager.getInstance().loadTaskList(rootView.getContext(), taskType);
 
-        TaskAdapter adapter = new TaskAdapter(TaskManager.getInstance().getTaskList(taskType));
+        adapter = new TaskAdapter(TaskManager.getInstance().getTaskList(taskType));
         recyclerView.setAdapter(adapter);
 
         return rootView;
     }
+
+    @Override
+    public void onTaskChange(TaskType taskType) {
+        if(taskType == this.taskType){
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
         class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener{
@@ -93,7 +104,6 @@ public class TaskListFragment extends Fragment {
                         }else{
                             notifyItemChanged(idx);
                         }
-                        TaskManager.getInstance().saveFileData(rootView.getContext(), taskType);
 
                         this.taskCheckBox.setChecked(false);
                     }
@@ -119,11 +129,7 @@ public class TaskListFragment extends Fragment {
                 Task task = tasks.get(idx);
                 AlertDialog.Builder builder = new AlertDialog.Builder(rootView.getContext());
                 builder.setMessage("确定删除任务吗？")
-                        .setPositiveButton("确定", (dialogInterface, i) -> {
-                            TaskManager.getInstance().deleteTask(task);
-                            notifyItemRemoved(idx);
-                            TaskManager.getInstance().saveFileData(rootView.getContext(), taskType);
-                        })
+                        .setPositiveButton("确定", (dialogInterface, i) -> TaskManager.getInstance().deleteTask(task))
                         .setNegativeButton("取消", (dialogInterface, i) -> dialogInterface.dismiss());
                 builder.show();
                 return true;
