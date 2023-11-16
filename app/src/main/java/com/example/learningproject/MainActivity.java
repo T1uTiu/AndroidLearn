@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.learningproject.Fragments.MapFragment;
+import com.example.learningproject.Fragments.Reward.RewardFragment;
 import com.example.learningproject.Fragments.Task.TaskFragment;
 import com.example.learningproject.Fragments.WebViewFragment;
 import com.example.learningproject.Manager.TaskManager;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (position){
                     case 0:
                         return TaskFragment.newInstance();
+                    case 1:
+                        return RewardFragment.newInstance();
                     case 2:
                         return MapFragment.newInstance();
                     default:

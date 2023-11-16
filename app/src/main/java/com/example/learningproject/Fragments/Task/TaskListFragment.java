@@ -91,9 +91,9 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
 
             public TaskViewHolder(@NonNull View itemView) {
                 super(itemView);
-                this.taskNameText = itemView.findViewById(R.id.task_name_text);
-                this.taskScoreText = itemView.findViewById(R.id.task_score_text);
-                this.taskTimesText = itemView.findViewById(R.id.task_progress_text);
+                this.taskNameText = itemView.findViewById(R.id.reward_name_text);
+                this.taskScoreText = itemView.findViewById(R.id.reward_score_text);
+                this.taskTimesText = itemView.findViewById(R.id.reward_progress_text);
                 this.taskCheckBox = itemView.findViewById(R.id.task_check);
                 this.taskCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
                     int idx = getAdapterPosition();

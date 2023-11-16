@@ -4,40 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dip"
-    android:paddingLeft="5dip"
-    android:paddingTop="5dp"
     android:longClickable="true"
-    android:paddingRight="5dip"
+    android:paddingStart="20dip"
+    android:paddingTop="5dp"
+    android:paddingEnd="10dip"
     android:paddingBottom="5dp">
-
-    <CheckBox
-        android:id="@+id/task_check"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:ignore="VisualLintButtonSize" />
 
     <TextView
         android:id="@+id/reward_name_text"
         android:layout_width="167dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="center|start"
         android:text="@string/hello"
         android:textSize="16sp" />
 
     <TextView
         android:id="@+id/reward_progress_text"
-        android:layout_width="34dp"
-        android:layout_height="wrap_content"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="center"
         android:text="@string/progress"
         android:textSize="12sp" />
 
     <TextView
         android:id="@+id/reward_score_text"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="center"
         android:text="@string/point"
         android:textColor="#0099FD"
         android:textSize="20sp"
