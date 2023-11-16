@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.example.learningproject.Model.Reward.Reward;
+import com.example.learningproject.Model.Reward.RewardType;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,7 +45,7 @@ public class RewardManager {
             ObjectInputStream ois = new ObjectInputStream(fis)){
             info = (HashMap<String, Long>) ois.readObject();
         }catch (IOException | ClassNotFoundException e){
-            info = new HashMap<String, Long>();
+            info = new HashMap<>();
             info.put("reward_id", 0L);
         }
     }
@@ -69,6 +70,13 @@ public class RewardManager {
         rewardList.add(reward);
         saveFileData();
     }
-
+    public boolean finishReward(Reward reward, int idx){
+        reward.setCurrentTimes(reward.getCurrentTimes() + 1);
+        if(reward.getType() == RewardType.ONESHOT){
+            rewardList.remove(idx);
+        }
+        saveFileData();
+        return reward.getType() == RewardType.ONESHOT;
+    }
 
 }

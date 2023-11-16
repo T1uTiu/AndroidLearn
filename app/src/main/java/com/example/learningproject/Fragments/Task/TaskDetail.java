@@ -43,7 +43,7 @@ public class TaskDetail extends AppCompatActivity {
         taskTimesEdit = findViewById(R.id.detail_task_times_edit);
         okBtn = findViewById(R.id.detail_task_ok_btn);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, taskTypes);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
         taskTypeSpinner.setAdapter(adapter);
 
         okBtn.setOnClickListener(view -> {

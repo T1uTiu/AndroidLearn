@@ -21,6 +21,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Fragments.Reward.RewardDetail"
+            android:exported="false" />
+        <activity
             android:name=".Fragments.Task.TaskDetail"
             android:exported="false" />
 
@@ -28,9 +31,6 @@
             android:name="TencentMapSDK"
             android:value="T2UBZ-XYDCM-IMJ66-6FT4R-MFOY3-SYFL6" />
 
-        <activity
-            android:name=".BookDetailsActivity"
-            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -40,10 +40,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".Receiver.DayTaskRefreshReceiver" />
-        <receiver android:name=".Receiver.WeekTaskRefreshReceiver"/>
-        <service android:name=".Service.DayTaskRefreshService"/>
-        <service android:name=".Service.WeekTaskRefreshService"/>
     </application>
 
 </manifest>

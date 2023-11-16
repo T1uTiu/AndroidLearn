@@ -18,6 +18,7 @@ import com.example.learningproject.Fragments.MapFragment;
 import com.example.learningproject.Fragments.Reward.RewardFragment;
 import com.example.learningproject.Fragments.Task.TaskFragment;
 import com.example.learningproject.Fragments.WebViewFragment;
+import com.example.learningproject.Manager.RewardManager;
 import com.example.learningproject.Manager.TaskManager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         TaskManager.getInstance().loadFileData(this);
         TaskManager.getInstance().tryRefreshTask();
+
+        RewardManager.getInstance().loadFileData(this);
 
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.view_pager);

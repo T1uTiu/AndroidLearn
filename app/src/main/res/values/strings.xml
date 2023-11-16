@@ -15,4 +15,5 @@
     <string name="title">标题</string>
     <string name="score">分数</string>
     <string name="times">次数</string>
+    <string name="reward_add">添加奖励</string>
 </resources>

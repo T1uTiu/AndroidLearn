@@ -1,9 +1,14 @@
 package com.example.learningproject.Fragments.Reward;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,11 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.example.learningproject.Fragments.Task.TaskDetail;
+import com.example.learningproject.Manager.RewardManager;
 import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.Model.Reward.RewardType;
 import com.example.learningproject.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +38,8 @@ import java.util.List;
 public class RewardFragment extends Fragment {
     View rootView;
     RewardAdapter adapter;
+    FloatingActionButton rewardAddBtn;
+    ActivityResultLauncher<Bundle> rewardDetailLauncher;
     public RewardFragment() {
         // Required empty public constructor
     }
@@ -53,26 +64,49 @@ public class RewardFragment extends Fragment {
         RecyclerView recyclerView = rootView.findViewById(R.id.reward_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(rootView.getContext(),DividerItemDecoration.VERTICAL));
-        List<Reward> testRewards = new ArrayList<>();
-        testRewards.add(new Reward("test1", 10, RewardType.ONESHOT));
-        testRewards.add(new Reward("test1", 10, RewardType.INFINITY));
-        adapter = new RewardAdapter(testRewards);
+        adapter = new RewardAdapter(RewardManager.getInstance().getRewardList());
         recyclerView.setAdapter(adapter);
+
+        rewardDetailLauncher = registerForActivityResult(new RewardDetailResultContract(), result -> {
+            if(result == 1){
+                adapter.notifyItemInserted(adapter.getItemCount() - 1);
+            }
+        });
+        rewardAddBtn = rootView.findViewById(R.id.reward_add_btn);
+        rewardAddBtn.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("method", 0);
+            rewardDetailLauncher.launch(bundle);
+        });
 
         return rootView;
     }
-    class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardViewHolder>{
+    static class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardViewHolder>{
 
         class RewardViewHolder extends RecyclerView.ViewHolder{
             final TextView rewardNameText;
             final TextView rewardScoreText;
             final TextView rewardTimesText;
+            final CheckBox rewardCheck;
 
             public RewardViewHolder(@NonNull View itemView) {
                 super(itemView);
                 this.rewardNameText = itemView.findViewById(R.id.reward_name_text);
                 this.rewardScoreText = itemView.findViewById(R.id.reward_score_text);
                 this.rewardTimesText = itemView.findViewById(R.id.reward_progress_text);
+                this.rewardCheck = itemView.findViewById(R.id.reward_check);
+                this.rewardCheck.setOnCheckedChangeListener((compoundButton, b) -> {
+                    int idx = getAdapterPosition();
+                    Reward reward = rewards.get(idx);
+                    if(b){
+                        if(RewardManager.getInstance().finishReward(reward, idx)){
+                            notifyItemRemoved(idx);
+                        }else{
+                            notifyItemChanged(idx);
+                        }
+                        this.rewardCheck.setChecked(false);
+                    }
+                });
             }
 
             public TextView getRewardNameText() {
@@ -117,5 +151,20 @@ public class RewardFragment extends Fragment {
         }
 
 
+    }
+
+    static class RewardDetailResultContract extends ActivityResultContract<Bundle, Integer> {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Bundle input) {
+            Intent intent = new Intent(context, RewardDetail.class);
+            intent.putExtra("param", input);
+            return intent;
+        }
+
+        @Override
+        public Integer parseResult(int resultCode, @Nullable Intent intent) {
+            return resultCode;
+        }
     }
 }
