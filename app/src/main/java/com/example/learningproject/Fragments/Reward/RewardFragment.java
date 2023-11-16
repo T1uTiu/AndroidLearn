@@ -1,6 +1,9 @@
 package com.example.learningproject.Fragments.Reward;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,20 +17,21 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.example.learningproject.Fragments.Task.TaskDetail;
 import com.example.learningproject.Manager.RewardManager;
 import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.Model.Reward.RewardType;
 import com.example.learningproject.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,8 +72,11 @@ public class RewardFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         rewardDetailLauncher = registerForActivityResult(new RewardDetailResultContract(), result -> {
-            if(result == 1){
-                adapter.notifyItemInserted(adapter.getItemCount() - 1);
+            int method = result.getInt("method");
+            if(method == 0){
+                adapter.notifyItemInserted(RewardManager.getInstance().getRewardList().size() - 1);
+            }else{
+                adapter.notifyItemChanged(result.getInt("idx"));
             }
         });
         rewardAddBtn = rootView.findViewById(R.id.reward_add_btn);
@@ -81,9 +88,9 @@ public class RewardFragment extends Fragment {
 
         return rootView;
     }
-    static class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardViewHolder>{
+    class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardViewHolder>{
 
-        class RewardViewHolder extends RecyclerView.ViewHolder{
+        class RewardViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener{
             final TextView rewardNameText;
             final TextView rewardScoreText;
             final TextView rewardTimesText;
@@ -107,6 +114,13 @@ public class RewardFragment extends Fragment {
                         this.rewardCheck.setChecked(false);
                     }
                 });
+                itemView.setOnCreateContextMenuListener(this);
+                itemView.setOnClickListener(view -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("method", 1);
+                    bundle.putInt("idx", getAdapterPosition());
+                    rewardDetailLauncher.launch(bundle);
+                });
             }
 
             public TextView getRewardNameText() {
@@ -119,6 +133,27 @@ public class RewardFragment extends Fragment {
 
             public TextView getRewardTimesText() {
                 return rewardTimesText;
+            }
+
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                int idx = getAdapterPosition();
+                Reward reward = rewards.get(idx);
+                AlertDialog.Builder builder = new AlertDialog.Builder(rootView.getContext());
+                builder.setMessage("确定删除奖励吗？")
+                        .setPositiveButton("确定", (dialogInterface, i) -> {
+                            RewardManager.getInstance().deleteReward(reward, idx);
+                            notifyItemRemoved(idx);
+                        })
+                        .setNegativeButton("取消", (dialogInterface, i) -> dialogInterface.dismiss());
+                builder.show();
+                return true;
+            }
+
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                MenuItem delete = contextMenu.add(Menu.NONE, 1,1, "删除");
+                delete.setOnMenuItemClickListener(this);
             }
         }
         List<Reward> rewards;
@@ -153,7 +188,7 @@ public class RewardFragment extends Fragment {
 
     }
 
-    static class RewardDetailResultContract extends ActivityResultContract<Bundle, Integer> {
+    static class RewardDetailResultContract extends ActivityResultContract<Bundle, Bundle> {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, Bundle input) {
@@ -163,8 +198,12 @@ public class RewardFragment extends Fragment {
         }
 
         @Override
-        public Integer parseResult(int resultCode, @Nullable Intent intent) {
-            return resultCode;
+        public Bundle parseResult(int resultCode, @Nullable Intent intent) {
+            if(resultCode == RESULT_OK){
+                assert intent != null;
+                return intent.getBundleExtra("param");
+            }
+            return null;
         }
     }
 }

@@ -13,11 +13,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.learningproject.Manager.RewardManager;
-import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.Model.Reward.RewardType;
-import com.example.learningproject.Model.Task.Task;
-import com.example.learningproject.Model.Task.TaskType;
 import com.example.learningproject.R;
 
 public class RewardDetail extends AppCompatActivity {
@@ -47,6 +44,14 @@ public class RewardDetail extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, rewardTypes);
         rewardTypeSpinner.setAdapter(adapter);
 
+        if(method == 1){
+            int idx = param.getInt("reward");
+            Reward reward = RewardManager.getInstance().getRewardList().get(idx);
+            rewardNameEdit.setText(reward.getName());
+            rewardScoreEdit.setText(String.valueOf(reward.getScore()));
+            rewardTypeSpinner.setSelection(reward.getType().value());
+        }
+
         okBtn.setOnClickListener(view -> {
             String rewardRawName = rewardNameEdit.getText().toString();
             String rewardRawScore = rewardScoreEdit.getText().toString();
@@ -56,8 +61,22 @@ public class RewardDetail extends AppCompatActivity {
                 int rewardScore = Integer.parseInt(rewardRawScore);
                 int rewardRawType = (int)rewardTypeSpinner.getSelectedItemId();
                 RewardType rewardType = RewardType.valueOf(rewardRawType);
-                Reward reward = new Reward(rewardRawName, rewardScore, rewardType);
-                RewardManager.getInstance().addReward(reward);
+                Intent resIntent = new Intent();
+                Bundle resParam = new Bundle();
+                resParam.putInt("method", method);
+                if(method == 0){
+                    Reward reward = new Reward(rewardRawName, rewardScore, rewardType);
+                    RewardManager.getInstance().addReward(reward);
+                }else{
+                    int idx = param.getInt("reward");
+                    Reward reward = RewardManager.getInstance().getRewardList().get(idx);
+                    reward.setName(rewardRawName);
+                    reward.setScore(rewardScore);
+                    reward.setType(rewardType);
+                    resParam.putInt("idx", idx);
+                }
+                resIntent.putExtra("param", resParam);
+                setResult(RESULT_OK, resIntent);
                 finish();
             }
 

@@ -78,5 +78,9 @@ public class RewardManager {
         saveFileData();
         return reward.getType() == RewardType.ONESHOT;
     }
+    public void deleteReward(Reward reward, int idx){
+        rewardList.remove(idx);
+        saveFileData();
+    }
 
 }
