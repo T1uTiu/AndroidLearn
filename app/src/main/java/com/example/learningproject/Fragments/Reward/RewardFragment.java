@@ -72,12 +72,15 @@ public class RewardFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         rewardDetailLauncher = registerForActivityResult(new RewardDetailResultContract(), result -> {
-            int method = result.getInt("method");
-            if(method == 0){
-                adapter.notifyItemInserted(RewardManager.getInstance().getRewardList().size() - 1);
-            }else{
-                adapter.notifyItemChanged(result.getInt("idx"));
+            if(result != null){
+                int method = result.getInt("method");
+                if(method == 0){
+                    adapter.notifyItemInserted(RewardManager.getInstance().getRewardList().size() - 1);
+                }else{
+                    adapter.notifyItemChanged(result.getInt("idx"));
+                }
             }
+
         });
         rewardAddBtn = rootView.findViewById(R.id.reward_add_btn);
         rewardAddBtn.setOnClickListener(view -> {

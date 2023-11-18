@@ -16,4 +16,10 @@
     <string name="score">分数</string>
     <string name="times">次数</string>
     <string name="reward_add">添加奖励</string>
+    <string name="overview_i_e">收支总览</string>
+    <string name="expenditure">支出</string>
+    <string name="income">收入</string>
+    <string name="bill_title">账单</string>
+    <string name="time">时间</string>
+    <string name="surplus">结余</string>
 </resources>

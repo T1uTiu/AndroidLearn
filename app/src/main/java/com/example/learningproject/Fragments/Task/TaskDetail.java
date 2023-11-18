@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.learningproject.Manager.RewardManager;
+import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
@@ -45,6 +47,7 @@ public class TaskDetail extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
         taskTypeSpinner.setAdapter(adapter);
+
 
         okBtn.setOnClickListener(view -> {
             String taskRawName = taskNameEdit.getText().toString();

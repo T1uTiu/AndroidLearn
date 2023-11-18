@@ -14,17 +14,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.learningproject.Fragments.MapFragment;
 import com.example.learningproject.Fragments.Reward.RewardFragment;
+import com.example.learningproject.Fragments.Statistics.StatisticsFragment;
 import com.example.learningproject.Fragments.Task.TaskFragment;
-import com.example.learningproject.Fragments.WebViewFragment;
 import com.example.learningproject.Manager.RewardManager;
 import com.example.learningproject.Manager.TaskManager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class MainActivity extends AppCompatActivity {
-    private final int activeColor = Color.parseColor("#ff678f");
+    private final int activeColor = R.color.purple_700;
     private final int normalColor = Color.parseColor("#666666");
     TabLayout tabLayout;
     TabLayoutMediator mediator;
@@ -35,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(position);
         }
     };
-    final String[] tabLabels = {"任务", "奖励", "统计", "我的"};
-    final int[] tabIcons = {R.drawable.ic_task_list, R.drawable.ic_reward, R.drawable.ic_statistics, R.drawable.ic_me};
+    final String[] tabLabels = {"任务", "奖励", "统计"};
+    final int[] tabIcons = {R.drawable.ic_task_list, R.drawable.ic_reward, R.drawable.ic_statistics};
 
 
     @Override
@@ -60,10 +59,8 @@ public class MainActivity extends AppCompatActivity {
                         return TaskFragment.newInstance();
                     case 1:
                         return RewardFragment.newInstance();
-                    case 2:
-                        return MapFragment.newInstance();
                     default:
-                        return WebViewFragment.newInstance(position);
+                        return StatisticsFragment.newInstance();
                 }
             }
 
@@ -94,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
             tab.setCustomView(tabView);
         });
         mediator.attach();
-
 
     }
 
