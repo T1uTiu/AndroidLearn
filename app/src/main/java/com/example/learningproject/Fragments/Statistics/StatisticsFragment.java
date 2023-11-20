@@ -103,10 +103,10 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     @Override
     public void onScoreLogChange(int method, int score) {
         if(method == 0){
-            adapter.notifyItemInserted(adapter.getItemCount()-1);
+            adapter.notifyItemInserted(0);
             entries.add(new Entry(entries.size(), score));
         }else{
-            adapter.notifyItemChanged(adapter.getItemCount()-1);
+            adapter.notifyItemChanged(0);
             entries.get(entries.size()-1).setY(entries.get(entries.size()-1).getY()+score);
         }
 
@@ -211,10 +211,11 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
 
         @Override
         public void onBindViewHolder(@NonNull ScoreLogAdapter.ScoreLogViewHolder holder, int position) {
-            String timeString = formatter.format(scoreLogList.get(position).getTime());
+            int idx = scoreLogList.size()-1-position;
+            String timeString = formatter.format(scoreLogList.get(idx).getTime());
             holder.scoreLogTimeText.setText(timeString);
-            holder.scoreLogNameText.setText(scoreLogList.get(position).getName());
-            int score = scoreLogList.get(position).getScore();
+            holder.scoreLogNameText.setText(scoreLogList.get(idx).getName());
+            int score = scoreLogList.get(idx).getScore();
             holder.scoreLogScoreText.setText(String.valueOf(score));
             if(score < 0){
                 holder.scoreLogScoreText.setTextColor(ContextCompat.getColor(rootView.getContext(), R.color.outcome));
