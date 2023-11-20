@@ -27,6 +27,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.learningproject.Manager.RewardManager;
+import com.example.learningproject.Manager.ScoreManager;
 import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.Model.Reward.RewardType;
 import com.example.learningproject.R;
@@ -114,6 +115,7 @@ public class RewardFragment extends Fragment {
                         }else{
                             notifyItemChanged(idx);
                         }
+                        ScoreManager.getInstance().addScoreLog(-reward.getScore(), reward.getName());
                         this.rewardCheck.setChecked(false);
                     }
                 });

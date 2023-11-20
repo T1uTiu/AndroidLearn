@@ -1,10 +1,13 @@
 package com.example.learningproject.Model;
 
-public class ScoreLog {
+import java.io.Serializable;
+
+public class ScoreLog implements Serializable {
     long time;
     int score;
-    public ScoreLog(long time, int score){
-        this.score = score; this.time = time;
+    String name;
+    public ScoreLog(long time, int score, String name){
+        this.score = score; this.time = time; this.name = name;
     }
 
     public int getScore() {
@@ -13,5 +16,9 @@ public class ScoreLog {
 
     public long getTime() {
         return time;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -20,10 +20,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.learningproject.Interface.TaskChangeObserver;
+import com.example.learningproject.Manager.ScoreManager;
 import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Task.TaskType;
+import com.google.android.material.color.utilities.Score;
 
 import java.util.List;
 
@@ -101,6 +103,7 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                     if(b){
                         if(TaskManager.getInstance().finishTask(task)){
                             notifyItemRemoved(idx);
+                            ScoreManager.getInstance().addScoreLog(task.getScore(), task.getName());
                         }else{
                             notifyItemChanged(idx);
                         }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/today_stats_menu" android:title="@string/today_stats"/>
+    <item android:id="@+id/this_week_stats_menu" android:title="@string/this_week_stats"/>
+    <item android:id="@+id/all_stats_menu" android:title="@string/all_stats"/>
+</menu>

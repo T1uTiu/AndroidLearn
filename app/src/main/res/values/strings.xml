@@ -22,4 +22,7 @@
     <string name="bill_title">账单</string>
     <string name="time">时间</string>
     <string name="surplus">结余</string>
+    <string name="today_stats">统计今日</string>
+    <string name="this_week_stats">统计本周</string>
+    <string name="all_stats">统计所有</string>
 </resources>
