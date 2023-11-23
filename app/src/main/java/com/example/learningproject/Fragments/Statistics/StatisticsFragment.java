@@ -37,7 +37,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     View rootView;
     TextView sumOfIncomeText;
     TextView sumOfOutcomeText;
-    List<Entry> entries;
+    LineDataSet scoreLogDataSet;
     LineChart lineChart;
     ScoreBillAdapter adapter;
     public StatisticsFragment() {
@@ -80,8 +80,9 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         //endregion
         //region 收支折线图
         lineChart = rootView.findViewById(R.id.stats_line_chart);
+        lineChart.getAxisLeft().setDrawZeroLine(true);
         lineChart.setNoDataText("暂无记录");
-        entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
         for(int i = 0; i < ScoreManager.getInstance().getScoreLogGroupKeyList().size(); i++){
             int surplus = 0;
             HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
@@ -90,10 +91,11 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             for(ScoreLog scoreLog : scoreLogList){
                 surplus += scoreLog.getScore();
             }
-            entries.add(new Entry(i, surplus));
+            Entry e = new Entry(i, surplus);
+            entries.add(e);
         }
-        LineDataSet dataSet = new LineDataSet(entries, "Label");
-        LineData lineData = new LineData(dataSet);
+        scoreLogDataSet = new LineDataSet(entries, "所有记录");
+        LineData lineData = new LineData(scoreLogDataSet);
         lineChart.setData(lineData);
         lineChart.invalidate();
         //endregion
@@ -104,12 +106,14 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     public void onScoreLogChange(int method, int score) {
         if(method == 0){
             adapter.notifyItemInserted(0);
-            entries.add(new Entry(entries.size(), score));
+            scoreLogDataSet.addEntry(new Entry(scoreLogDataSet.getEntryCount(), score));
         }else{
             adapter.notifyItemChanged(0);
-            entries.get(entries.size()-1).setY(entries.get(entries.size()-1).getY()+score);
-        }
+            Entry e = scoreLogDataSet.getValues().get(scoreLogDataSet.getEntryCount()-1);
+            e.setY(e.getY()+score);
 
+        }
+        lineChart.notifyDataSetChanged();
         lineChart.invalidate();
     }
 

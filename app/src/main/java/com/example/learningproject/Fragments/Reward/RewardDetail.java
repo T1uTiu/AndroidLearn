@@ -45,7 +45,7 @@ public class RewardDetail extends AppCompatActivity {
         rewardTypeSpinner.setAdapter(adapter);
 
         if(method == 1){
-            int idx = param.getInt("reward");
+            int idx = param.getInt("idx");
             Reward reward = RewardManager.getInstance().getRewardList().get(idx);
             rewardNameEdit.setText(reward.getName());
             rewardScoreEdit.setText(String.valueOf(reward.getScore()));
@@ -68,7 +68,7 @@ public class RewardDetail extends AppCompatActivity {
                     Reward reward = new Reward(rewardRawName, rewardScore, rewardType);
                     RewardManager.getInstance().addReward(reward);
                 }else{
-                    int idx = param.getInt("reward");
+                    int idx = param.getInt("idx");
                     Reward reward = RewardManager.getInstance().getRewardList().get(idx);
                     reward.setName(rewardRawName);
                     reward.setScore(rewardScore);

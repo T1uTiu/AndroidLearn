@@ -1,15 +1,19 @@
 package com.example.learningproject.Fragments.Task;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +42,7 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
     private TaskType taskType;
     View rootView;
     TaskAdapter adapter;
+    ActivityResultLauncher<Bundle> taskDetailLauncher;
     public TaskListFragment() {
         // Required empty public constructor
     }
@@ -68,10 +73,14 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
         RecyclerView recyclerView = rootView.findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(rootView.getContext(),DividerItemDecoration.VERTICAL));
-        // TaskManager.getInstance().loadTaskList(rootView.getContext(), taskType);
-
         adapter = new TaskAdapter(TaskManager.getInstance().getTaskList(taskType));
         recyclerView.setAdapter(adapter);
+
+        taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result ->{
+            if(result == Activity.RESULT_OK){
+                Log.d("TaskDetail", "修改任务成功");
+            }
+        });
 
         return rootView;
     }
@@ -112,6 +121,15 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                     }
                 });
                 itemView.setOnCreateContextMenuListener(this);
+                itemView.setOnClickListener(view -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("method", 1);
+                    int idx = getAdapterPosition();
+                    bundle.putInt("idx", idx);
+                    Task task = tasks.get(idx);
+                    bundle.putInt("taskType", task.getType().value());
+                    taskDetailLauncher.launch(bundle);
+                });
             }
 
             public TextView getTaskNameText() {
@@ -132,7 +150,7 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                 Task task = tasks.get(idx);
                 AlertDialog.Builder builder = new AlertDialog.Builder(rootView.getContext());
                 builder.setMessage("确定删除任务吗？")
-                        .setPositiveButton("确定", (dialogInterface, i) -> TaskManager.getInstance().deleteTask(task))
+                        .setPositiveButton("确定", (dialogInterface, i) -> TaskManager.getInstance().deleteTask(taskType, idx))
                         .setNegativeButton("取消", (dialogInterface, i) -> dialogInterface.dismiss());
                 builder.show();
                 return true;

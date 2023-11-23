@@ -1,17 +1,14 @@
 package com.example.learningproject.Fragments.Task;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -70,6 +67,9 @@ public class TaskFragment extends Fragment {
         mediator.attach();
 
         taskDetailLauncher = registerForActivityResult(new TaskDetailResultContract(), result -> {
+            if(result == Activity.RESULT_OK){
+                Log.d("TaskDetail", "新增任务成功");
+            }
         });
         fab.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -78,20 +78,5 @@ public class TaskFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-}
-class TaskDetailResultContract extends ActivityResultContract<Bundle, Integer>{
-    @NonNull
-    @Override
-    public Intent createIntent(@NonNull Context context, Bundle input) {
-        Intent intent = new Intent(context, TaskDetail.class);
-        intent.putExtra("param", input);
-        return intent;
-    }
-
-    @Override
-    public Integer parseResult(int resultCode, @Nullable Intent intent) {
-        return resultCode;
     }
 }

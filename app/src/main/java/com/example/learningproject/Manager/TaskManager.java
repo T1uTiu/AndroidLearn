@@ -154,34 +154,60 @@ public class TaskManager {
             observer.onTaskChange(type);
         }
     }
-    public void deleteTask(Task task){
-        TaskType type = task.getType();
-        switch (type){
+    public void deleteTask(TaskType taskType, int idx){
+        long taskID;
+        switch (taskType){
             case EVERYDAY:
-                curDayTaskList.remove(task);
+                taskID = curDayTaskList.get(idx).getId();
+                curDayTaskList.remove(idx);
                 for(Task t : dayTaskList){
-                    if(t.getId() == task.getId()){
+                    if(t.getId() == taskID){
                         dayTaskList.remove(t);
                         break;
                     }
                 }
                 break;
             case EVERYWEEK:
-                curWeekTaskList.remove(task);
+                taskID = curDayTaskList.get(idx).getId();
+                curWeekTaskList.remove(idx);
                 for(Task t : weekTaskList){
-                    if(t.getId() == task.getId()){
+                    if(t.getId() == taskID){
                         weekTaskList.remove(t);
                         break;
                     }
                 }
                 break;
             case NORMAL:
-                onetimeTaskList.remove(task);
+                onetimeTaskList.remove(idx);
                 break;
         }
-        saveFileData(type);
+        saveFileData(taskType);
         for(TaskChangeObserver observer : taskChangeObservers){
-            observer.onTaskChange(type);
+            observer.onTaskChange(taskType);
+        }
+    }
+    public void editTask(TaskType taskType, int idx, String newName, int newScore, int newTimes){
+        Task task;
+        switch (taskType){
+            case EVERYDAY:
+                task = curDayTaskList.get(idx);
+                break;
+            case EVERYWEEK:
+                task = curWeekTaskList.get(idx);
+                break;
+            default:
+                task = onetimeTaskList.get(idx);
+                break;
+        }
+        task.setName(newName);
+        task.setScore(newScore);
+        task.setTimes(newTimes);
+        if(task.getCurrentTimes() >= newTimes){
+            task.setCurrentTimes(newTimes-1);
+        }
+        saveFileData(taskType);
+        for(TaskChangeObserver observer : taskChangeObservers){
+            observer.onTaskChange(taskType);
         }
     }
     public boolean finishTask(Task task){

@@ -48,6 +48,16 @@ public class TaskDetail extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
         taskTypeSpinner.setAdapter(adapter);
 
+        if(method == 1){
+            int idx = param.getInt("idx");
+            TaskType taskType = TaskType.valueOf(param.getInt("taskType"));
+            assert taskType != null;
+            Task task = TaskManager.getInstance().getTaskList(taskType).get(idx);
+            taskNameEdit.setText(task.getName());
+            taskScoreEdit.setText(String.valueOf(task.getScore()));
+            taskTimesEdit.setText(String.valueOf(task.getTimes()));
+            taskTypeSpinner.setSelection(task.getType().value());
+        }
 
         okBtn.setOnClickListener(view -> {
             String taskRawName = taskNameEdit.getText().toString();
@@ -60,9 +70,23 @@ public class TaskDetail extends AppCompatActivity {
                 int taskTimes = taskRawTimes.isEmpty() ? 1 : Integer.parseInt(taskRawTimes);
                 int taskRawType = (int)taskTypeSpinner.getSelectedItemId();
                 TaskType taskType = TaskType.valueOf(taskRawType);
-                Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
-                assert taskType != null;
-                TaskManager.getInstance().addTask(newTask);
+
+                if(method == 0){
+                    Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
+                    TaskManager.getInstance().addTask(newTask);
+                }else{
+                    int idx = param.getInt("idx");
+                    TaskType originTaskType = TaskType.valueOf(param.getInt("taskType"));
+                    assert originTaskType != null;
+                    TaskManager.getInstance().editTask(originTaskType, idx, taskRawName, taskScore, taskTimes);
+                    Task task = TaskManager.getInstance().getTaskList(originTaskType).get(idx);
+                    if(taskType != originTaskType){
+                        task.setType(taskType);
+                        TaskManager.getInstance().deleteTask(originTaskType, idx);
+                        TaskManager.getInstance().addTask(task);
+                    }
+                }
+                setResult(RESULT_OK);
                 finish();
             }
 
