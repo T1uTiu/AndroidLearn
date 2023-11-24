@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -25,11 +24,11 @@ import android.widget.TextView;
 
 import com.example.learningproject.Interface.TaskChangeObserver;
 import com.example.learningproject.Manager.ScoreManager;
+import com.example.learningproject.Navigation.TaskDetailResultContract;
 import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Task.TaskType;
-import com.google.android.material.color.utilities.Score;
 
 import java.util.List;
 
@@ -122,12 +121,13 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                 });
                 itemView.setOnCreateContextMenuListener(this);
                 itemView.setOnClickListener(view -> {
+                    int idx = getAdapterPosition();
+                    Task task = tasks.get(idx);
                     Bundle bundle = new Bundle();
                     bundle.putInt("method", 1);
-                    int idx = getAdapterPosition();
                     bundle.putInt("idx", idx);
-                    Task task = tasks.get(idx);
                     bundle.putInt("taskType", task.getType().value());
+                    bundle.putInt("editType", 0);
                     taskDetailLauncher.launch(bundle);
                 });
             }

@@ -17,13 +17,16 @@ import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Task.TaskType;
 
+import java.util.Objects;
+
 public class TaskDetailActivity extends AppCompatActivity {
     Spinner taskTypeSpinner;
     Button okBtn;
     EditText taskNameEdit;
     EditText taskScoreEdit;
     EditText taskTimesEdit;
-    String[] taskTypes = {TaskType.EVERYDAY.name(), TaskType.EVERYWEEK.name(), TaskType.NORMAL.name()};
+    String[] taskTypes = {"每日任务", "每周任务", "普通任务"};
+    String[] taskTypes2 = {"每日任务", "每周任务"};
     String[] titles = {"添加任务", "编辑任务"};
 
     @Override
@@ -34,7 +37,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         Bundle param = intent.getBundleExtra("param");
         int method = param.getInt("method");
 
-        getSupportActionBar().setTitle(titles[method]);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(titles[method]);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         taskTypeSpinner = findViewById(R.id.detail_task_type_spinner);
@@ -43,14 +46,28 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskTimesEdit = findViewById(R.id.detail_task_times_edit);
         okBtn = findViewById(R.id.detail_task_ok_btn);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
+        ArrayAdapter<String> adapter;
+        if(method == 0 || param.getInt("editType") == 0){
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
+        }else{
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes2);
+        }
         taskTypeSpinner.setAdapter(adapter);
 
         if(method == 1){
             int idx = param.getInt("idx");
             TaskType taskType = TaskType.valueOf(param.getInt("taskType"));
             assert taskType != null;
-            Task task = TaskManager.getInstance().getTaskList(taskType).get(idx);
+            int editType = param.getInt("editType");
+            Task task;
+            if(editType == 0){
+                // 修改当前任务列表的任务（今日任务，本周任务，普通任务）
+                task = TaskManager.getInstance().getTaskList(taskType).get(idx);
+            }else{
+                // 修改重复任务列表的任务（每日任务，每周任务）
+                task = TaskManager.getInstance().getRepeatTaskList(taskType).get(idx);
+            }
+
             taskNameEdit.setText(task.getName());
             taskScoreEdit.setText(String.valueOf(task.getScore()));
             taskTimesEdit.setText(String.valueOf(task.getTimes()));
@@ -70,19 +87,35 @@ public class TaskDetailActivity extends AppCompatActivity {
                 TaskType taskType = TaskType.valueOf(taskRawType);
 
                 if(method == 0){
+                    // 新增任务
                     Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
-                    TaskManager.getInstance().addTask(newTask);
+                    TaskManager.getInstance().addTask(newTask, true);
                 }else{
+                    // 编辑任务
                     int idx = param.getInt("idx");
                     TaskType originTaskType = TaskType.valueOf(param.getInt("taskType"));
-                    assert originTaskType != null;
-                    TaskManager.getInstance().editTask(originTaskType, idx, taskRawName, taskScore, taskTimes);
-                    Task task = TaskManager.getInstance().getTaskList(originTaskType).get(idx);
-                    if(taskType != originTaskType){
-                        task.setType(taskType);
-                        TaskManager.getInstance().deleteTask(originTaskType, idx);
-                        TaskManager.getInstance().addTask(task);
+                    int editType = param.getInt("editType");
+                    if(editType == 0){
+                        // 修改当前任务列表的任务
+                        TaskManager.getInstance().editTask(originTaskType, idx, taskRawName, taskScore, taskTimes);
+                        Task task = TaskManager.getInstance().getTaskList(originTaskType).get(idx);
+                        if(taskType != originTaskType){
+                            task.setType(taskType);
+                            TaskManager.getInstance().deleteTask(originTaskType, idx);
+                            TaskManager.getInstance().addTask(task, false);
+                        }
+                    }else{
+                        // 修改重复任务列表的任务
+                        TaskManager.getInstance().editRepeatTask(originTaskType, idx, taskRawName, taskScore, taskTimes);
+                        Task task = TaskManager.getInstance().getRepeatTaskList(originTaskType).get(idx);
+                        if(taskType != originTaskType){
+                            task.setType(taskType);
+                            TaskManager.getInstance().deleteRepeatTask(originTaskType, idx);
+                            TaskManager.getInstance().addRepeatTask(task, false);
+                        }
                     }
+
+
                 }
                 setResult(RESULT_OK);
                 finish();
@@ -95,10 +128,9 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

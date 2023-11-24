@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -35,12 +36,13 @@ public class TaskManager {
     HashMap<String, Long> info;
     Context context;
     List<TaskChangeObserver> taskChangeObservers = new ArrayList<>();
-
+    SimpleDateFormat dateFormat;
 
     final String[] fileName = {"cur_day_task_list", "cur_week_task_list", "onetime_task_list",
             "day_task_list", "week_task_list","onetime_task_list"};
+    @SuppressLint("SimpleDateFormat")
     private TaskManager() {
-
+        dateFormat = new SimpleDateFormat("yyyyMMdd");
     }
     public void attachTaskChangeObserver(TaskChangeObserver observer){
         taskChangeObservers.add(observer);
@@ -142,9 +144,11 @@ public class TaskManager {
             e.printStackTrace();
         }
     }
-    public void addTask(Task task){
-        task.setId(info.get("task_id"));
-        info.put("task_id", info.get("task_id") + 1);
+    public void addTask(Task task, boolean setID){
+        if(setID){
+            task.setId(info.get("task_id"));
+            info.put("task_id", info.get("task_id") + 1);
+        }
         TaskType type = task.getType();
         switch (type){
             case EVERYDAY:
@@ -164,28 +168,29 @@ public class TaskManager {
             observer.onTaskChange(type);
         }
     }
-    public void deleteTask(TaskType taskType, int idx){
-        long taskID;
-        switch (taskType){
+    public void addRepeatTask(Task task, boolean setID){
+        if(setID){
+            task.setId(info.get("task_id"));
+            info.put("task_id", info.get("task_id") + 1);
+        }
+        TaskType type = task.getType();
+        switch (type){
             case EVERYDAY:
-                taskID = curDayTaskList.get(idx).getId();
-                curDayTaskList.remove(idx);
-                for(Task t : dayTaskList){
-                    if(t.getId() == taskID){
-                        dayTaskList.remove(t);
-                        break;
-                    }
-                }
+                dayTaskList.add(task);
                 break;
             case EVERYWEEK:
-                taskID = curDayTaskList.get(idx).getId();
+                weekTaskList.add(task);
+                break;
+        }
+        saveFileData(type);
+    }
+    public void deleteTask(TaskType taskType, int idx){
+        switch (taskType){
+            case EVERYDAY:
+                curDayTaskList.remove(idx);
+                break;
+            case EVERYWEEK:
                 curWeekTaskList.remove(idx);
-                for(Task t : weekTaskList){
-                    if(t.getId() == taskID){
-                        weekTaskList.remove(t);
-                        break;
-                    }
-                }
                 break;
             case NORMAL:
                 onetimeTaskList.remove(idx);
@@ -195,6 +200,17 @@ public class TaskManager {
         for(TaskChangeObserver observer : taskChangeObservers){
             observer.onTaskChange(taskType);
         }
+    }
+    public void deleteRepeatTask(TaskType taskType, int idx){
+        switch (taskType){
+            case EVERYDAY:
+                dayTaskList.remove(idx);
+                break;
+            case EVERYWEEK:
+                weekTaskList.remove(idx);
+                break;
+        }
+        saveFileData(taskType);
     }
     public void editTask(TaskType taskType, int idx, String newName, int newScore, int newTimes){
         Task task;
@@ -220,9 +236,27 @@ public class TaskManager {
             observer.onTaskChange(taskType);
         }
     }
+    public void editRepeatTask(TaskType taskType, int idx, String newName, int newScore, int newTimes){
+        Task task;
+        switch (taskType){
+            case EVERYDAY:
+                task = dayTaskList.get(idx);
+                break;
+            case EVERYWEEK:
+                task = weekTaskList.get(idx);
+                break;
+            default:
+                return;
+        }
+        task.setName(newName);
+        task.setScore(newScore);
+        task.setTimes(newTimes);
+        saveFileData(taskType);
+    }
     public boolean finishTask(Task task){
         TaskType type = task.getType();
         task.setCurrentTimes(task.getCurrentTimes() + 1);
+        boolean res = false;
         if(task.getCurrentTimes() == task.getTimes()){
             switch (type){
                 case EVERYDAY:
@@ -235,23 +269,19 @@ public class TaskManager {
                     onetimeTaskList.remove(task);
                     break;
             }
-            saveFileData(type);
-            return true;
+            res = true;
         }
         saveFileData(type);
-        return false;
+        return res;
     }
     public void tryRefreshTask(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        Calendar lastRefreshDay = Calendar.getInstance();
-        lastRefreshDay.setTimeInMillis(info.get("last_refresh_day"));
-        Calendar lastRefreshWeek = Calendar.getInstance();
-        lastRefreshWeek.setTimeInMillis(info.get("last_refresh_week"));
-        if(calendar.get(Calendar.DAY_OF_YEAR) != lastRefreshDay.get(Calendar.DAY_OF_YEAR)){
+        String curDate = dateFormat.format(System.currentTimeMillis());
+        String lastRefreshDayDate = dateFormat.format(info.get("last_refresh_day"));
+        String lastRefreshWeekDate = dateFormat.format(info.get("last_refresh_week"));
+        if(!curDate.equals(lastRefreshDayDate)){
             refreshDayTask();
         }
-        if(calendar.get(Calendar.WEEK_OF_YEAR) != lastRefreshWeek.get(Calendar.WEEK_OF_YEAR)){
+        if(!curDate.equals(lastRefreshWeekDate)){
             refreshWeekTask();
         }
     }

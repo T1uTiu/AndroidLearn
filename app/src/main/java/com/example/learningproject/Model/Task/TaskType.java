@@ -18,10 +18,8 @@ public enum TaskType {
                 return EVERYDAY;
             case 1:
                 return EVERYWEEK;
-            case 2:
-                return NORMAL;
             default:
-                return null;
+                return NORMAL;
         }
     }
 
