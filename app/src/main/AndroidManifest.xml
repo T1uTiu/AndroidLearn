@@ -21,10 +21,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".Fragments.Reward.RewardDetail"
+            android:name=".Activities.TaskManagerActivity"
             android:exported="false" />
         <activity
-            android:name=".Fragments.Task.TaskDetail"
+            android:name=".Activities.RewardDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.TaskDetailActivity"
             android:exported="false" />
 
         <meta-data
@@ -32,7 +35,7 @@
             android:value="T2UBZ-XYDCM-IMJ66-6FT4R-MFOY3-SYFL6" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

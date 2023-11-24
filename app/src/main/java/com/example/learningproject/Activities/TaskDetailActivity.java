@@ -1,4 +1,4 @@
-package com.example.learningproject.Fragments.Task;
+package com.example.learningproject.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,14 +12,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.learningproject.Manager.RewardManager;
-import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Task.TaskType;
 
-public class TaskDetail extends AppCompatActivity {
+public class TaskDetailActivity extends AppCompatActivity {
     Spinner taskTypeSpinner;
     Button okBtn;
     EditText taskNameEdit;

@@ -57,6 +57,16 @@ public class TaskManager {
                 return null;
         }
     }
+    public List<Task> getRepeatTaskList(TaskType type){
+        switch (type){
+            case EVERYDAY:
+                return dayTaskList;
+            case EVERYWEEK:
+                return weekTaskList;
+            default:
+                return null;
+        }
+    }
     @SuppressWarnings("unchecked")
     public void loadFileData(Context context){
         this.context = context;

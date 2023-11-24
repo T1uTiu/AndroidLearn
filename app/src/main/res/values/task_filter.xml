@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="task_filter">
+        <item>每日任务</item>
+        <item>每周任务</item>
+    </string-array>
+</resources>

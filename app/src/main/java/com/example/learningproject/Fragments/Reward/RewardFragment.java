@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.example.learningproject.Activities.RewardDetailActivity;
 import com.example.learningproject.Manager.RewardManager;
 import com.example.learningproject.Manager.ScoreManager;
 import com.example.learningproject.Model.Reward.Reward;
@@ -197,7 +198,7 @@ public class RewardFragment extends Fragment {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, Bundle input) {
-            Intent intent = new Intent(context, RewardDetail.class);
+            Intent intent = new Intent(context, RewardDetailActivity.class);
             intent.putExtra("param", input);
             return intent;
         }

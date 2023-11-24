@@ -1,4 +1,4 @@
-package com.example.learningproject.Fragments.Reward;
+package com.example.learningproject.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +17,7 @@ import com.example.learningproject.Model.Reward.Reward;
 import com.example.learningproject.Model.Reward.RewardType;
 import com.example.learningproject.R;
 
-public class RewardDetail extends AppCompatActivity {
+public class RewardDetailActivity extends AppCompatActivity {
     Spinner rewardTypeSpinner;
     EditText rewardNameEdit;
     EditText rewardScoreEdit;

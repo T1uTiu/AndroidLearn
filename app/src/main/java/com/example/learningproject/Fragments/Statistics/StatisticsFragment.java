@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.learningproject.Interface.ScoreLogObserver;
@@ -189,11 +190,13 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             TextView scoreLogNameText;
             TextView scoreLogTimeText;
             TextView scoreLogScoreText;
+            ImageView scoreLogIcon;
             public ScoreLogViewHolder(@NonNull View itemView) {
                 super(itemView);
                 scoreLogNameText = itemView.findViewById(R.id.score_log_name_text);
                 scoreLogTimeText = itemView.findViewById(R.id.score_log_time_text);
                 scoreLogScoreText = itemView.findViewById(R.id.score_log_score_text);
+                scoreLogIcon = itemView.findViewById(R.id.score_log_icon);
             }
         }
         int date;
@@ -223,8 +226,10 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             holder.scoreLogScoreText.setText(String.valueOf(score));
             if(score < 0){
                 holder.scoreLogScoreText.setTextColor(ContextCompat.getColor(rootView.getContext(), R.color.outcome));
+                holder.scoreLogIcon.setImageResource(R.drawable.ic_outcome);
             }else{
                 holder.scoreLogScoreText.setTextColor(ContextCompat.getColor(rootView.getContext(), R.color.income));
+                holder.scoreLogIcon.setImageResource(R.drawable.ic_income);
             }
         }
 

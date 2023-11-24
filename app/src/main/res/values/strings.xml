@@ -25,4 +25,20 @@
     <string name="today_stats">统计今日</string>
     <string name="this_week_stats">统计本周</string>
     <string name="all_stats">统计所有</string>
+    <string name="avatar">头像</string>
+    <string name="all_task">管理任务</string>
+    <string name="open_drawer">打开</string>
+    <string name="close_drawer">关闭</string>
+    <string name="title_activity_task_manager_acvitity">TaskManagerAcvitity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="filter">筛选</string>
+    <string name="edit">编辑</string>
+    <string name="delete">删除</string>
 </resources>
