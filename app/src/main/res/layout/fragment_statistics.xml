@@ -65,6 +65,7 @@
                     android:layout_marginTop="5dp"
                     android:text="@string/expenditure"
                     android:textAlignment="center"
+                    android:textColor="@color/outcome"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/stats_sum_of_outcome_label" />
@@ -77,6 +78,7 @@
                     android:layout_marginEnd="80dp"
                     android:text="@string/income"
                     android:textAlignment="center"
+                    android:textColor="@color/income"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/stats_sum_of_income_label" />

@@ -70,9 +70,13 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         // Inflate the layout for this fragment
 
         rootView =  inflater.inflate(R.layout.fragment_statistics, container, false);
+        HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
+        List<Integer> scoreLogGroupKeyList = ScoreManager.getInstance().getScoreLogGroupKeyList();
         //region 收支总览
         sumOfIncomeText = rootView.findViewById(R.id.stats_sum_of_income_text);
         sumOfOutcomeText = rootView.findViewById(R.id.stats_sum_of_outcome_text);
+        int sumOfIncome = 0;
+        int sumOfOutcome = 0;
         //region 收支列表
         RecyclerView recyclerView = rootView.findViewById(R.id.stats_bill_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
@@ -84,12 +88,15 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         lineChart.getAxisLeft().setDrawZeroLine(true);
         lineChart.setNoDataText("暂无记录");
         List<Entry> entries = new ArrayList<>();
-        for(int i = 0; i < ScoreManager.getInstance().getScoreLogGroupKeyList().size(); i++){
+        for(int i = 0; i < scoreLogGroupKeyList.size(); i++){
             int surplus = 0;
-            HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
-            List<Integer> scoreLogGroupKeyList = ScoreManager.getInstance().getScoreLogGroupKeyList();
             List<ScoreLog> scoreLogList = scoreLogGroup.get(scoreLogGroupKeyList.get(i));
             for(ScoreLog scoreLog : scoreLogList){
+                if(scoreLog.getScore() > 0){
+                    sumOfIncome += scoreLog.getScore();
+                }else{
+                    sumOfOutcome -= scoreLog.getScore();
+                }
                 surplus += scoreLog.getScore();
             }
             Entry e = new Entry(i, surplus);
@@ -99,6 +106,9 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         LineData lineData = new LineData(scoreLogDataSet);
         lineChart.setData(lineData);
         lineChart.invalidate();
+
+        sumOfIncomeText.setText(String.valueOf(sumOfIncome));
+        sumOfOutcomeText.setText(String.valueOf(sumOfOutcome));
         //endregion
         return rootView;
     }
@@ -116,6 +126,12 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         }
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
+
+        if(score > 0){
+            sumOfIncomeText.setText(String.valueOf(Integer.parseInt(sumOfIncomeText.getText().toString())+score));
+        }else{
+            sumOfOutcomeText.setText(String.valueOf(Integer.parseInt(sumOfOutcomeText.getText().toString())-score));
+        }
     }
 
 

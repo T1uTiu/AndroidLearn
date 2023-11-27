@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/ok_btn"
-            tools:ignore="VisualLintButtonSize" />
+            tools:ignore="VisualLintButtonSize,TextContrastCheck" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

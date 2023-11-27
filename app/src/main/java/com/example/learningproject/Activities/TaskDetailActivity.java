@@ -16,6 +16,7 @@ import com.example.learningproject.R;
 import com.example.learningproject.Model.Task.Task;
 import com.example.learningproject.Manager.TaskManager;
 import com.example.learningproject.Model.Task.TaskType;
+import com.example.learningproject.Utils.TypeSpinnerAdapter;
 
 import java.util.Objects;
 
@@ -46,13 +47,14 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskTimesEdit = findViewById(R.id.detail_task_times_edit);
         okBtn = findViewById(R.id.detail_task_ok_btn);
 
-        ArrayAdapter<String> adapter;
+        TypeSpinnerAdapter adapter;
         if(method == 0 || param.getInt("editType") == 0){
-            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes);
+            adapter = new TypeSpinnerAdapter(this,  taskTypes);
         }else{
-            adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, taskTypes2);
+            adapter = new TypeSpinnerAdapter(this,  taskTypes2);
         }
         taskTypeSpinner.setAdapter(adapter);
+
 
         if(method == 1){
             int idx = param.getInt("idx");

@@ -144,6 +144,7 @@ public class TaskManager {
             e.printStackTrace();
         }
     }
+    @SuppressWarnings("ConstantConditions")
     public void addTask(Task task, boolean setID){
         if(setID){
             task.setId(info.get("task_id"));
@@ -168,6 +169,7 @@ public class TaskManager {
             observer.onTaskChange(type);
         }
     }
+    @SuppressWarnings("ConstantConditions")
     public void addRepeatTask(Task task, boolean setID){
         if(setID){
             task.setId(info.get("task_id"));
@@ -274,14 +276,19 @@ public class TaskManager {
         saveFileData(type);
         return res;
     }
+    @SuppressWarnings("ConstantConditions")
     public void tryRefreshTask(){
-        String curDate = dateFormat.format(System.currentTimeMillis());
-        String lastRefreshDayDate = dateFormat.format(info.get("last_refresh_day"));
-        String lastRefreshWeekDate = dateFormat.format(info.get("last_refresh_week"));
-        if(!curDate.equals(lastRefreshDayDate)){
+        Calendar calendar = Calendar.getInstance();
+        int curDay = calendar.get(Calendar.DAY_OF_YEAR);
+        int curWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+        calendar.setTimeInMillis(info.get("last_refresh_day"));
+        int lastRefreshDay = calendar.get(Calendar.DAY_OF_YEAR);
+        calendar.setTimeInMillis(info.get("last_refresh_week"));
+        int lastRefreshWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+        if(curDay != lastRefreshDay){
             refreshDayTask();
         }
-        if(!curDate.equals(lastRefreshWeekDate)){
+        if(curWeek != lastRefreshWeek){
             refreshWeekTask();
         }
     }
