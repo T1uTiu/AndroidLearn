@@ -91,7 +91,50 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
         }
     }
 
-    class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
+    class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+        public static final int TASK_VIEW = 0;
+        public static final int EMPTY_VIEW = 1;
+        private final List<Task> tasks;
+        public TaskAdapter(List<Task> tasks) {
+            this.tasks = tasks;
+        }
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            RecyclerView.ViewHolder holder;
+            if(viewType == TASK_VIEW){
+                View view = inflater.inflate(R.layout.listitem_task,parent,false);
+                holder = new TaskViewHolder(view);
+            }else{
+                View view = inflater.inflate(R.layout.layout_empty,parent,false);
+                holder = new EmptyViewHolder(view);
+            }
+            return holder;
+        }
+
+        @SuppressLint("DefaultLocale")
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if(holder instanceof EmptyViewHolder){
+                return;
+            }
+            Task task = tasks.get(position);
+            ((TaskViewHolder)holder).taskNameText.setText(task.getName());
+            ((TaskViewHolder)holder).taskScoreText.setText(String.format("+%d", task.getScore()));
+            ((TaskViewHolder)holder).taskTimesText.setText(String.format("%d/%d", task.getCurrentTimes(), task.getTimes()));
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return tasks.size()==0 ? 1 : tasks.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return tasks.size() == 0 ? EMPTY_VIEW : TASK_VIEW;
+        }
 
         class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener{
             private final TextView taskNameText;
@@ -132,18 +175,6 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                 });
             }
 
-            public TextView getTaskNameText() {
-                return taskNameText;
-            }
-
-            public TextView getTaskScoreText() {
-                return taskScoreText;
-            }
-
-            public TextView getTaskTimesText() {
-                return taskTimesText;
-            }
-
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
                 int idx = getAdapterPosition();
@@ -161,31 +192,12 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                 MenuItem delete = contextMenu.add(Menu.NONE, 1,1, "删除");
                 delete.setOnMenuItemClickListener(this);
             }
-        }
-        private final List<Task> tasks;
-        public TaskAdapter(List<Task> tasks) {
-            this.tasks = tasks;
-        }
-        @NonNull
-        @Override
-        public TaskAdapter.TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem_task,parent,false);
-            return new TaskViewHolder(view);
-        }
-
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void onBindViewHolder(@NonNull TaskAdapter.TaskViewHolder holder, int position) {
-            Task task = tasks.get(position);
-            holder.getTaskNameText().setText(task.getName());
-            holder.getTaskScoreText().setText(String.format("+%d", task.getScore()));
-            holder.getTaskTimesText().setText(String.format("%d/%d", task.getCurrentTimes(), task.getTimes()));
 
         }
-
-        @Override
-        public int getItemCount() {
-            return tasks.size();
+        class EmptyViewHolder extends RecyclerView.ViewHolder{
+            public EmptyViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
         }
     }
 }

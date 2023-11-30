@@ -93,7 +93,52 @@ public class RewardFragment extends Fragment {
 
         return rootView;
     }
-    class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardViewHolder>{
+    class RewardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+        static final int REWARD_VIEW = 0;
+        static final int EMPTY_VIEW = 1;
+
+        List<Reward> rewards;
+        public RewardAdapter(List<Reward> rewards){
+            this.rewards = rewards;
+        }
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            RecyclerView.ViewHolder holder;
+            if(viewType == REWARD_VIEW){
+                holder = new RewardViewHolder(inflater.inflate(R.layout.listitem_reward, parent, false));
+            }else{
+                holder = new EmptyViewHolder(inflater.inflate(R.layout.layout_empty, parent, false));
+            }
+            return holder;
+        }
+
+        @SuppressLint("DefaultLocale")
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if(holder instanceof EmptyViewHolder){
+                return;
+            }
+            Reward reward = rewards.get(position);
+            ((RewardViewHolder)holder).rewardNameText.setText(reward.getName());
+            ((RewardViewHolder)holder).rewardScoreText.setText(String.format("-%d", reward.getScore()));
+            if(reward.getType() == RewardType.ONESHOT){
+                ((RewardViewHolder)holder).rewardTimesText.setText(String.format("%d/%d", reward.getCurrentTimes(), 1));
+            }else{
+                ((RewardViewHolder)holder).rewardTimesText.setText(String.format("%d/∞", reward.getCurrentTimes()));
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return rewards.size()==0 ? 1 : rewards.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return rewards.size() == 0 ? EMPTY_VIEW : REWARD_VIEW;
+        }
 
         class RewardViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener{
             final TextView rewardNameText;
@@ -129,18 +174,6 @@ public class RewardFragment extends Fragment {
                 });
             }
 
-            public TextView getRewardNameText() {
-                return rewardNameText;
-            }
-
-            public TextView getRewardScoreText() {
-                return rewardScoreText;
-            }
-
-            public TextView getRewardTimesText() {
-                return rewardTimesText;
-            }
-
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
                 int idx = getAdapterPosition();
@@ -162,36 +195,11 @@ public class RewardFragment extends Fragment {
                 delete.setOnMenuItemClickListener(this);
             }
         }
-        List<Reward> rewards;
-        public RewardAdapter(List<Reward> rewards){
-            this.rewards = rewards;
-        }
-        @NonNull
-        @Override
-        public RewardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View viewHolder = LayoutInflater.from(parent.getContext()).inflate(R.layout.listitem_reward, parent, false);
-            return new RewardViewHolder(viewHolder);
-        }
-
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void onBindViewHolder(@NonNull RewardViewHolder holder, int position) {
-            Reward reward = rewards.get(position);
-            holder.getRewardNameText().setText(reward.getName());
-            holder.getRewardScoreText().setText(String.format("-%d", reward.getScore()));
-            if(reward.getType() == RewardType.ONESHOT){
-                holder.getRewardTimesText().setText(String.format("%d/%d", reward.getCurrentTimes(), 1));
-            }else{
-                holder.getRewardTimesText().setText(String.format("%d/∞", reward.getCurrentTimes()));
+        class EmptyViewHolder extends RecyclerView.ViewHolder{
+            public EmptyViewHolder(@NonNull View itemView) {
+                super(itemView);
             }
         }
-
-        @Override
-        public int getItemCount() {
-            return rewards.size();
-        }
-
-
     }
 
     static class RewardDetailResultContract extends ActivityResultContract<Bundle, Bundle> {
