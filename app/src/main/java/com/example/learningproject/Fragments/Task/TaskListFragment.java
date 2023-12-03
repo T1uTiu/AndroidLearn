@@ -85,9 +85,18 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
     }
 
     @Override
-    public void onTaskChange(TaskType taskType) {
-        if(taskType == this.taskType){
-            adapter.notifyDataSetChanged();
+    public void onTaskChange(TaskType taskType, int method, int idx) {
+        if(taskType != this.taskType) return ;
+        switch (method){
+            case TaskChangeObserver.ADD:
+                adapter.notifyItemInserted(adapter.getItemCount());
+                break;
+            case TaskChangeObserver.EDIT:
+                adapter.notifyItemChanged(idx);
+                break;
+            case TaskChangeObserver.DELETE:
+                adapter.notifyItemRemoved(idx);
+                break;
         }
     }
 
@@ -122,8 +131,7 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
             Task task = tasks.get(position);
             ((TaskViewHolder)holder).taskNameText.setText(task.getName());
             ((TaskViewHolder)holder).taskScoreText.setText(String.format("+%d", task.getScore()));
-            ((TaskViewHolder)holder).taskTimesText.setText(String.format("%d/%d", task.getCurrentTimes(), task.getTimes()));
-
+            ((TaskViewHolder)holder).taskTimesText.setText(String.format("%d/%d", task.getCurrentTimes(), task.getTotalTimes()));
         }
 
         @Override
@@ -153,13 +161,13 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
                     Task task = tasks.get(idx);
                     if(b){
                         if(TaskManager.getInstance().finishTask(task)){
-                            notifyItemRemoved(idx);
+                            TaskManager.getInstance().deleteTask(task.getType(), idx);
                             ScoreManager.getInstance().addScoreLog(task.getScore(), task.getName());
                         }else{
                             notifyItemChanged(idx);
                         }
-
                         this.taskCheckBox.setChecked(false);
+
                     }
                 });
                 itemView.setOnCreateContextMenuListener(this);
@@ -178,7 +186,6 @@ public class TaskListFragment extends Fragment implements TaskChangeObserver {
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
                 int idx = getAdapterPosition();
-                Task task = tasks.get(idx);
                 AlertDialog.Builder builder = new AlertDialog.Builder(rootView.getContext());
                 builder.setMessage("确定删除任务吗？")
                         .setPositiveButton("确定", (dialogInterface, i) -> TaskManager.getInstance().deleteTask(taskType, idx))

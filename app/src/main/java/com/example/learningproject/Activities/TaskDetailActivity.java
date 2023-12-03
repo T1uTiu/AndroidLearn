@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ public class TaskDetailActivity extends AppCompatActivity {
     EditText taskNameEdit;
     EditText taskScoreEdit;
     EditText taskTimesEdit;
+    CheckBox taskAccumulativeCheck;
     String[] taskTypes = {"每日任务", "每周任务", "普通任务"};
     String[] taskTypes2 = {"每日任务", "每周任务"};
     String[] titles = {"添加任务", "编辑任务"};
@@ -45,6 +48,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         taskNameEdit = findViewById(R.id.detail_task_name_edit);
         taskScoreEdit = findViewById(R.id.detail_task_score_edit);
         taskTimesEdit = findViewById(R.id.detail_task_times_edit);
+        taskAccumulativeCheck = findViewById(R.id.detail_task_accumulative_check);
         okBtn = findViewById(R.id.detail_task_ok_btn);
 
         TypeSpinnerAdapter adapter;
@@ -55,6 +59,17 @@ public class TaskDetailActivity extends AppCompatActivity {
         }
         taskTypeSpinner.setAdapter(adapter);
 
+        taskTypeSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                taskAccumulativeCheck.setEnabled(i < 2);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         if(method == 1){
             int idx = param.getInt("idx");
@@ -72,8 +87,9 @@ public class TaskDetailActivity extends AppCompatActivity {
 
             taskNameEdit.setText(task.getName());
             taskScoreEdit.setText(String.valueOf(task.getScore()));
-            taskTimesEdit.setText(String.valueOf(task.getTimes()));
+            taskTimesEdit.setText(String.valueOf(task.getTotalTimes()));
             taskTypeSpinner.setSelection(task.getType().value());
+            taskAccumulativeCheck.setChecked(task.isAccumulative());
         }
 
         okBtn.setOnClickListener(view -> {
@@ -86,11 +102,12 @@ public class TaskDetailActivity extends AppCompatActivity {
                 int taskScore = Integer.parseInt(taskRawScore);
                 int taskTimes = taskRawTimes.isEmpty() ? 1 : Integer.parseInt(taskRawTimes);
                 int taskRawType = (int)taskTypeSpinner.getSelectedItemId();
+                boolean accumulative = taskAccumulativeCheck.isChecked();
                 TaskType taskType = TaskType.valueOf(taskRawType);
 
                 if(method == 0){
                     // 新增任务
-                    Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType);
+                    Task newTask = new Task(taskRawName, taskScore, taskTimes, taskType, accumulative);
                     TaskManager.getInstance().addTask(newTask, true);
                 }else{
                     // 编辑任务
@@ -99,7 +116,7 @@ public class TaskDetailActivity extends AppCompatActivity {
                     int editType = param.getInt("editType");
                     if(editType == 0){
                         // 修改当前任务列表的任务
-                        TaskManager.getInstance().editTask(originTaskType, idx, taskRawName, taskScore, taskTimes);
+                        TaskManager.getInstance().editTask(originTaskType, idx, taskRawName, taskScore, taskTimes, accumulative);
                         Task task = TaskManager.getInstance().getTaskList(originTaskType).get(idx);
                         if(taskType != originTaskType){
                             task.setType(taskType);

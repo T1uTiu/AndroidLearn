@@ -3,19 +3,25 @@ package com.example.learningproject.Model.Task;
 import androidx.annotation.NonNull;
 
 public class Task implements java.io.Serializable, Cloneable {
+    public static final int FINISHED = 1;
+    public static final int UNFINISHED = 0;
     long id;
     String name;
     int score;
-    int times;
-    int currentTimes;
+    int totalTimes,  currentTimes;
     TaskType type;
+    boolean accumulative;
 
     public Task(String name, int score, int times, TaskType type) {
         this.name = name;
         this.score = score;
-        this.times = times;
-        this.type = type;
+        this.totalTimes = times;
         this.currentTimes = 0;
+        this.type = type;
+    }
+    public Task(String name, int score, int times, TaskType type, boolean accumulative) {
+        this(name, score, times, type);
+        this.accumulative = accumulative;
     }
 
     public long getId() {
@@ -26,8 +32,8 @@ public class Task implements java.io.Serializable, Cloneable {
         return score;
     }
 
-    public int getTimes() {
-        return times;
+    public int getTotalTimes() {
+        return totalTimes;
     }
 
     public int getCurrentTimes() {
@@ -37,10 +43,19 @@ public class Task implements java.io.Serializable, Cloneable {
     public String getName() {
         return name;
     }
-
     public TaskType getType() {
         return type;
     }
+    public boolean isAccumulative() {
+        return accumulative;
+    }
+    public int getTaskState(){
+        if (currentTimes >= totalTimes){
+            return FINISHED;
+        }
+        return UNFINISHED;
+    }
+
 
     public void setId(long id) {
         this.id = id;
@@ -54,8 +69,8 @@ public class Task implements java.io.Serializable, Cloneable {
         this.score = score;
     }
 
-    public void setTimes(int times) {
-        this.times = times;
+    public void setTotalTimes(int totalTimes) {
+        this.totalTimes = totalTimes;
     }
 
     public void setCurrentTimes(int currentTimes) {
@@ -64,6 +79,9 @@ public class Task implements java.io.Serializable, Cloneable {
 
     public void setType(TaskType type) {
         this.type = type;
+    }
+    public void setAccumulative(boolean accumulative) {
+        this.accumulative = accumulative;
     }
 
     @NonNull

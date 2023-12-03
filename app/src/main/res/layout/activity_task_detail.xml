@@ -125,6 +125,14 @@
             android:minHeight="48dp"
             android:spinnerMode="dialog" />
 
+        <CheckBox
+            android:id="@+id/detail_task_accumulative_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/accumulative"
+            android:textAlignment="textStart"
+            tools:ignore="VisualLintButtonSize" />
+
         <Button
             android:id="@+id/detail_task_ok_btn"
             android:layout_width="match_parent"

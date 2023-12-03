@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,7 +135,7 @@ public class TaskManagerActivity extends AppCompatActivity {
             Task task = taskList.get(position);
             holder.taskNameText.setText(task.getName());
             holder.taskScoreText.setText(String.valueOf(task.getScore()));
-            holder.taskTimesText.setText(String.format("?/%d", task.getTimes()));
+            holder.taskTimesText.setText(String.format("?/%d", task.getTotalTimes()));
         }
 
         @Override
