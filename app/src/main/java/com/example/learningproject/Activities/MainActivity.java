@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     ActionBarDrawerToggle toggle;
     TabLayoutMediator mediator;
     ViewPager2 viewPager2;
-    ActivityResultLauncher<Intent> taskManagerActivityLauncher;
+    ActivityResultLauncher<Intent> drawerMenuLauncher;
     private final ViewPager2.OnPageChangeCallback changeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
         public void onPageSelected(int position) {
@@ -79,14 +80,19 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
         drawerLayout.addDrawerListener(toggle);
 
-        taskManagerActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {});
+        drawerMenuLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {});
 
         drawerMenu = findViewById(R.id.drawer_view);
         drawerMenu.setNavigationItemSelectedListener(item -> {
-            switch (item.getOrder()){
-                case 0:
-                    Intent intent = new Intent(this, TaskManagerActivity.class);
-                    taskManagerActivityLauncher.launch(intent);
+            Intent intent;
+            switch (item.getItemId()){
+                case R.id.show_task_menu:
+                    intent = new Intent(this, TaskManagerActivity.class);
+                    drawerMenuLauncher.launch(intent);
+                    break;
+                case R.id.about_me_menu:
+                    intent = new Intent(this, AboutMeActivity.class);
+                    drawerMenuLauncher.launch(intent);
                     break;
             }
             drawerLayout.closeDrawer(GravityCompat.START);

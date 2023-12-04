@@ -23,7 +23,11 @@ import com.example.learningproject.Interface.ScoreLogObserver;
 import com.example.learningproject.Manager.ScoreManager;
 import com.example.learningproject.Model.ScoreLog;
 import com.example.learningproject.R;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -38,8 +42,8 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     View rootView;
     TextView sumOfIncomeText;
     TextView sumOfOutcomeText;
-    LineDataSet scoreLogDataSet;
-    LineChart lineChart;
+    BarDataSet scoreLogDataSet;
+    BarChart lineChart;
     ScoreBillAdapter adapter;
     public StatisticsFragment() {
         // Required empty public constructor
@@ -87,7 +91,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         lineChart = rootView.findViewById(R.id.stats_line_chart);
         lineChart.getAxisLeft().setDrawZeroLine(true);
         lineChart.setNoDataText("暂无记录");
-        List<Entry> entries = new ArrayList<>();
+        List<BarEntry> entries = new ArrayList<>();
         for(int i = 0; i < scoreLogGroupKeyList.size(); i++){
             int surplus = 0;
             List<ScoreLog> scoreLogList = scoreLogGroup.get(scoreLogGroupKeyList.get(i));
@@ -99,11 +103,11 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
                 }
                 surplus += scoreLog.getScore();
             }
-            Entry e = new Entry(i, surplus);
+            BarEntry e = new BarEntry(i, surplus);
             entries.add(e);
         }
-        scoreLogDataSet = new LineDataSet(entries, "所有记录");
-        LineData lineData = new LineData(scoreLogDataSet);
+        scoreLogDataSet = new BarDataSet(entries, "所有记录");
+        BarData lineData = new BarData(scoreLogDataSet);
         lineChart.setData(lineData);
         lineChart.invalidate();
 
@@ -117,7 +121,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     public void onScoreLogChange(int method, int score) {
         if(method == 0){
             adapter.notifyItemInserted(0);
-            scoreLogDataSet.addEntry(new Entry(scoreLogDataSet.getEntryCount(), score));
+            scoreLogDataSet.addEntry(new BarEntry(scoreLogDataSet.getEntryCount(), score));
         }else{
             adapter.notifyItemChanged(0);
             Entry e = scoreLogDataSet.getValues().get(scoreLogDataSet.getEntryCount()-1);

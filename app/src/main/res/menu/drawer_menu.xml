@@ -4,4 +4,8 @@
         android:id="@+id/show_task_menu"
         android:title="@string/all_task"
         android:icon="@drawable/ic_all_task"/>
+    <item
+        android:id="@+id/about_me_menu"
+        android:title="@string/about_me"
+        android:icon="@drawable/ic_home"/>
 </menu>

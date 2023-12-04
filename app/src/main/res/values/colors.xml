@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="outcome">#DD0000</color>
     <color name="income">#326CFF</color>
+    <color name="light_grey">#F7F7F7</color>
+    <color name="dark_grey">#181818</color>
 </resources>
