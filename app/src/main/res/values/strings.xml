@@ -16,10 +16,11 @@
     <string name="score">分数</string>
     <string name="times">次数</string>
     <string name="reward_add">添加奖励</string>
-    <string name="overview_i_e">收支总览</string>
+    <string name="overview_i_e">当前成就点数</string>
     <string name="expenditure">支出</string>
     <string name="income">收入</string>
     <string name="bill_title">账单</string>
+    <string name="chart_title">近15天汇总</string>
     <string name="time">时间</string>
     <string name="surplus">结余</string>
     <string name="today_stats">统计今日</string>
@@ -30,15 +31,8 @@
     <string name="about_me">关于我</string>
     <string name="open_drawer">打开</string>
     <string name="close_drawer">关闭</string>
-    <string name="title_activity_task_manager_acvitity">TaskManagerAcvitity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
     <string name="filter">筛选</string>
     <string name="edit">编辑</string>
     <string name="delete">删除</string>

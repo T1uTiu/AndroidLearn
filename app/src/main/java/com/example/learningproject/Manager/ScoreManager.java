@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class ScoreManager {
     @SuppressLint("StaticFieldLeak")
@@ -28,19 +29,24 @@ public class ScoreManager {
         }
         return instance;
     }
-    final String[] filename = {"score_log_group", "score_log_group_key"};
+    final String[] filename = {"score_log_group", "score_log_group_key", "current_score", "current_income", "current_outcome"};
     HashMap<Integer, List<ScoreLog>> scoreLogGroup = new HashMap<>(); // 以每日零点为键值，记录每一天的积分记录
     List<Integer> scoreLogGroupKeyList = new ArrayList<>(); // 记录所有的键值，方便按下标遍历
+    Integer currentScore = 0, currentIncome = 0, currentOutcome = 0;
     Context context;
     List<ScoreLogObserver> scoreLogObservers;
     SimpleDateFormat dateFormat;
-    @SuppressLint("SimpleDateFormat")
+
     ScoreManager(){
-        dateFormat = new SimpleDateFormat("yyyyMMdd");
+        dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         scoreLogObservers = new ArrayList<>();
     }
     public void attachScoreLogObserver(ScoreLogObserver observer){
         scoreLogObservers.add(observer);
+    }
+
+    public SimpleDateFormat getDateFormat() {
+        return dateFormat;
     }
 
     @SuppressWarnings("unchecked")
@@ -49,10 +55,22 @@ public class ScoreManager {
         for(int i = 0; i < filename.length; i++){
             try(FileInputStream fis = context.openFileInput(filename[i]);
                 ObjectInputStream ois = new ObjectInputStream(fis)){
-                if(i == 0){
-                    this.scoreLogGroup = (HashMap<Integer, List<ScoreLog>>) ois.readObject();
-                } else if (i == 1) {
-                    this.scoreLogGroupKeyList = (List<Integer>) ois.readObject();
+                switch (i) {
+                    case 0:
+                        this.scoreLogGroup = (HashMap<Integer, List<ScoreLog>>) ois.readObject();
+                        break;
+                    case 1:
+                        this.scoreLogGroupKeyList = (List<Integer>) ois.readObject();
+                        break;
+                    case 2:
+                        this.currentScore = (Integer) ois.readObject();
+                        break;
+                    case 3:
+                        this.currentIncome = (Integer) ois.readObject();
+                        break;
+                    case 4:
+                        this.currentOutcome = (Integer) ois.readObject();
+                        break;
                 }
 
             }catch (IOException | ClassNotFoundException e){
@@ -64,10 +82,22 @@ public class ScoreManager {
         for(int i =0; i < filename.length; i++){
             try(FileOutputStream fos = context.openFileOutput(filename[i], Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-                if(i == 0){
-                    oos.writeObject(scoreLogGroup);
-                }else if(i==1){
-                    oos.writeObject(scoreLogGroupKeyList);
+                switch (i) {
+                    case 0:
+                        oos.writeObject(scoreLogGroup);
+                        break;
+                    case 1:
+                        oos.writeObject(scoreLogGroupKeyList);
+                        break;
+                    case 2:
+                        oos.writeObject(currentScore);
+                        break;
+                    case 3:
+                        oos.writeObject(currentIncome);
+                        break;
+                    case 4:
+                        oos.writeObject(currentOutcome);
+                        break;
                 }
                 Log.d("ScoreManager", "保存成功");
             }catch (IOException e){
@@ -83,6 +113,18 @@ public class ScoreManager {
     public HashMap<Integer, List<ScoreLog>> getScoreLogGroup(){
         return scoreLogGroup;
     }
+    public Integer getCurrentScore(){
+        return currentScore;
+    }
+
+    public Integer getCurrentIncome() {
+        return currentIncome;
+    }
+
+    public Integer getCurrentOutcome() {
+        return currentOutcome;
+    }
+
     public void addScoreLog(int score, String name){
         String dateString = dateFormat.format(System.currentTimeMillis());
         int date = Integer.parseInt(dateString);
@@ -98,6 +140,10 @@ public class ScoreManager {
             scoreLogGroup.put(date, scoreLogList);
             scoreLogGroupKeyList.add(date);
         }
+        // 更新current
+        currentScore += score;
+        if(score > 0)currentIncome += score;
+        else currentOutcome -= score;
         for(ScoreLogObserver observer : scoreLogObservers){
             observer.onScoreLogChange(method, score);
         }

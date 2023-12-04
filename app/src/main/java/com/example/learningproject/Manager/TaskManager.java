@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TaskManager {
     @SuppressLint("StaticFieldLeak")
     private static TaskManager instance;
@@ -187,6 +188,73 @@ public class TaskManager {
             observer.onTaskChange(taskType, TaskChangeObserver.DELETE, idx);
         }
     }
+    public void deleteFromCurTask(TaskType taskType, int idx){
+        Task task;
+        switch (taskType){
+            case EVERYDAY:
+                task = curDayTaskList.get(idx);
+                for(int i = 0; i < dayTaskList.size(); i++){
+                    if(dayTaskList.get(i).getId() == task.getId()){
+                        dayTaskList.remove(i);
+                        break;
+                    }
+                }
+                curDayTaskList.remove(idx);
+                break;
+            case EVERYWEEK:
+                task = curWeekTaskList.get(idx);
+                for(int i = 0; i < weekTaskList.size(); i++){
+                    if(weekTaskList.get(i).getId() == task.getId()){
+                        weekTaskList.remove(i);
+                        break;
+                    }
+                }
+                curWeekTaskList.remove(idx);
+                break;
+            default:
+                onetimeTaskList.remove(idx);
+        }
+        for(TaskChangeObserver observer : taskChangeObservers){
+            observer.onTaskChange(taskType, TaskChangeObserver.DELETE, idx);
+        }
+        saveFileData(taskType);
+    }
+    public void deleteFromRepeatTask(TaskType taskType, int idx){
+        Task task;
+        int targetIdx = -1;
+        switch (taskType){
+            case EVERYDAY:
+                task = dayTaskList.get(idx);
+                for(int i = 0; i < curDayTaskList.size(); i++){
+                    if(curDayTaskList.get(i).getId() == task.getId()){
+                        targetIdx = i;
+                        break;
+                    }
+                }
+                if(targetIdx != -1) curDayTaskList.remove(targetIdx);
+                dayTaskList.remove(idx);
+                break;
+            case EVERYWEEK:
+                task = weekTaskList.get(idx);
+                for(int i = 0; i < curWeekTaskList.size(); i++){
+                    if(curWeekTaskList.get(i).getId() == task.getId()){
+                        targetIdx = i;
+                        break;
+                    }
+                }
+                if(targetIdx != -1) curDayTaskList.remove(targetIdx);
+                weekTaskList.remove(idx);
+                break;
+            default:
+                return;
+        }
+        if(targetIdx != -1){
+            for(TaskChangeObserver observer : taskChangeObservers){
+                observer.onTaskChange(taskType, TaskChangeObserver.DELETE, targetIdx);
+            }
+        }
+        saveFileData(taskType);
+    }
     public void deleteRepeatTask(TaskType taskType, int idx){
         switch (taskType){
             case EVERYDAY:
@@ -223,6 +291,7 @@ public class TaskManager {
             observer.onTaskChange(taskType, TaskChangeObserver.EDIT, idx);
         }
     }
+
     public void editRepeatTask(TaskType taskType, int idx, String newName, int newScore, int newTimes){
         Task task;
         switch (taskType){

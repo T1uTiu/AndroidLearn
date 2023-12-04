@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,25 +22,26 @@ import com.example.learningproject.Interface.ScoreLogObserver;
 import com.example.learningproject.Manager.ScoreManager;
 import com.example.learningproject.Model.ScoreLog;
 import com.example.learningproject.R;
+import com.example.learningproject.Utils.ScoreLogXAxisValueFormatter;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class StatisticsFragment extends Fragment implements ScoreLogObserver {
 
     View rootView;
-    TextView sumOfIncomeText;
-    TextView sumOfOutcomeText;
+    TextView currentIncomeText, currentOutcomeText, currentScoreText;
     BarDataSet scoreLogDataSet;
     BarChart lineChart;
     ScoreBillAdapter adapter;
@@ -60,13 +60,9 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         ScoreManager.getInstance().attachScoreLogObserver(this);
     }
 
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.statistics_menu, menu);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,68 +70,76 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         // Inflate the layout for this fragment
 
         rootView =  inflater.inflate(R.layout.fragment_statistics, container, false);
-        HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
-        List<Integer> scoreLogGroupKeyList = ScoreManager.getInstance().getScoreLogGroupKeyList();
-        //region 收支总览
-        sumOfIncomeText = rootView.findViewById(R.id.stats_sum_of_income_text);
-        sumOfOutcomeText = rootView.findViewById(R.id.stats_sum_of_outcome_text);
-        int sumOfIncome = 0;
-        int sumOfOutcome = 0;
-        //region 收支列表
+        initOverviewCard();
+        initScoreBill();
+        initChart();
+        return rootView;
+    }
+    void initScoreBill(){
         RecyclerView recyclerView = rootView.findViewById(R.id.stats_bill_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         adapter = new ScoreBillAdapter();
         recyclerView.setAdapter(adapter);
-        //endregion
-        //region 收支折线图
+    }
+    void initChart(){
+        HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
         lineChart = rootView.findViewById(R.id.stats_line_chart);
         lineChart.getAxisLeft().setDrawZeroLine(true);
-        lineChart.setNoDataText("暂无记录");
+        lineChart.setNoDataText("近15天无记录");
         List<BarEntry> entries = new ArrayList<>();
-        for(int i = 0; i < scoreLogGroupKeyList.size(); i++){
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = ScoreManager.getInstance().getDateFormat();
+        for(int i = 14; i >= 0; i--){
             int surplus = 0;
-            List<ScoreLog> scoreLogList = scoreLogGroup.get(scoreLogGroupKeyList.get(i));
-            for(ScoreLog scoreLog : scoreLogList){
-                if(scoreLog.getScore() > 0){
-                    sumOfIncome += scoreLog.getScore();
-                }else{
-                    sumOfOutcome -= scoreLog.getScore();
+            int key = Integer.parseInt(dateFormat.format(calendar.getTime()));
+            if(scoreLogGroup.containsKey(key)){
+                List<ScoreLog> scoreLogList = scoreLogGroup.get(key);
+                assert scoreLogList != null;
+                for(ScoreLog scoreLog : scoreLogList){
+                    surplus += scoreLog.getScore();
                 }
-                surplus += scoreLog.getScore();
             }
-            BarEntry e = new BarEntry(i, surplus);
-            entries.add(e);
+            entries.add(new BarEntry(i, surplus));
+            // 前一天
+            calendar.add(Calendar.DATE, -1);
         }
-        scoreLogDataSet = new BarDataSet(entries, "所有记录");
+        scoreLogDataSet = new BarDataSet(entries, "结余");
+        scoreLogDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.purple_500));
         BarData lineData = new BarData(scoreLogDataSet);
+        lineChart.getXAxis().setValueFormatter(new ScoreLogXAxisValueFormatter(15));
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lineChart.getXAxis().setLabelRotationAngle(-60);
+        lineChart.setDescription(null);
         lineChart.setData(lineData);
         lineChart.invalidate();
+    }
+    private void initOverviewCard() {
+        currentIncomeText = rootView.findViewById(R.id.stats_sum_of_income_text);
+        currentOutcomeText = rootView.findViewById(R.id.stats_sum_of_outcome_text);
+        currentScoreText = rootView.findViewById(R.id.stats_overview_text);
 
-        sumOfIncomeText.setText(String.valueOf(sumOfIncome));
-        sumOfOutcomeText.setText(String.valueOf(sumOfOutcome));
-        //endregion
-        return rootView;
+        currentIncomeText.setText(String.valueOf(ScoreManager.getInstance().getCurrentIncome()));
+        currentOutcomeText.setText(String.valueOf(ScoreManager.getInstance().getCurrentOutcome()));
+        currentScoreText.setText(String.valueOf(ScoreManager.getInstance().getCurrentScore()));
     }
 
     @Override
     public void onScoreLogChange(int method, int score) {
-        if(method == 0){
-            adapter.notifyItemInserted(0);
-            scoreLogDataSet.addEntry(new BarEntry(scoreLogDataSet.getEntryCount(), score));
-        }else{
-            adapter.notifyItemChanged(0);
-            Entry e = scoreLogDataSet.getValues().get(scoreLogDataSet.getEntryCount()-1);
-            e.setY(e.getY()+score);
 
-        }
+        adapter.notifyItemChanged(0);
+        Entry e = scoreLogDataSet.getValues().get(scoreLogDataSet.getEntryCount()-1);
+        e.setY(e.getY()+score);
+
+
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
 
         if(score > 0){
-            sumOfIncomeText.setText(String.valueOf(Integer.parseInt(sumOfIncomeText.getText().toString())+score));
+            currentIncomeText.setText(String.valueOf(ScoreManager.getInstance().getCurrentIncome()));
         }else{
-            sumOfOutcomeText.setText(String.valueOf(Integer.parseInt(sumOfOutcomeText.getText().toString())-score));
+            currentOutcomeText.setText(String.valueOf(ScoreManager.getInstance().getCurrentOutcome()));
         }
+        currentScoreText.setText(String.valueOf(ScoreManager.getInstance().getCurrentScore()));
     }
 
 
@@ -164,9 +168,9 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             }
         }
         SimpleDateFormat formatter;
-        @SuppressLint("SimpleDateFormat")
+
         ScoreBillAdapter(){
-            formatter = new SimpleDateFormat("MM-dd");
+            formatter = new SimpleDateFormat("MM-dd", Locale.getDefault());
         }
         @NonNull
         @Override
@@ -180,7 +184,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             List<Integer> scoreLogGroupKeyList = ScoreManager.getInstance().getScoreLogGroupKeyList();
             int date = scoreLogGroupKeyList.get(scoreLogGroupKeyList.size()-1-position);
             List<ScoreLog> scoreLogList = ScoreManager.getInstance().getScoreLogGroup().get(date);
-
+            assert  scoreLogList != null;
             String dateString = formatter.format(scoreLogList.get(0).getTime());
             holder.getTimeText().setText(dateString);
 
