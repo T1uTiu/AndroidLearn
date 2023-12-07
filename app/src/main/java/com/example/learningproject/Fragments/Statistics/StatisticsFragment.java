@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 
 
 import java.text.SimpleDateFormat;
@@ -44,7 +42,9 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     TextView currentIncomeText, currentOutcomeText, currentScoreText;
     BarDataSet scoreLogDataSet;
     BarChart lineChart;
+    ScoreLogXAxisValueFormatter xAxisValueFormatter;
     ScoreBillAdapter adapter;
+    int chartTotalDays = 15;
     public StatisticsFragment() {
         // Required empty public constructor
     }
@@ -89,7 +89,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         List<BarEntry> entries = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = ScoreManager.getInstance().getDateFormat();
-        for(int i = 14; i >= 0; i--){
+        for(int i = chartTotalDays-1; i >= 0; i--){
             int surplus = 0;
             int key = Integer.parseInt(dateFormat.format(calendar.getTime()));
             if(scoreLogGroup.containsKey(key)){
@@ -106,7 +106,8 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
         scoreLogDataSet = new BarDataSet(entries, "结余");
         scoreLogDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.purple_500));
         BarData lineData = new BarData(scoreLogDataSet);
-        lineChart.getXAxis().setValueFormatter(new ScoreLogXAxisValueFormatter(15));
+        xAxisValueFormatter = new ScoreLogXAxisValueFormatter(chartTotalDays);
+        lineChart.getXAxis().setValueFormatter(xAxisValueFormatter);
         lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         lineChart.getXAxis().setLabelRotationAngle(-60);
         lineChart.setDescription(null);
@@ -125,10 +126,14 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
 
     @Override
     public void onScoreLogChange(int method, int score) {
-
-        adapter.notifyItemChanged(0);
-        Entry e = scoreLogDataSet.getValues().get(scoreLogDataSet.getEntryCount()-1);
+        if(method == 1){
+            adapter.notifyItemChanged(0);
+        }else{
+            adapter.notifyItemInserted(0);
+        }
+        BarEntry e = scoreLogDataSet.getValues().get(0);
         e.setY(e.getY()+score);
+
 
 
         lineChart.notifyDataSetChanged();
@@ -184,7 +189,7 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             List<Integer> scoreLogGroupKeyList = ScoreManager.getInstance().getScoreLogGroupKeyList();
             int date = scoreLogGroupKeyList.get(scoreLogGroupKeyList.size()-1-position);
             List<ScoreLog> scoreLogList = ScoreManager.getInstance().getScoreLogGroup().get(date);
-            assert  scoreLogList != null;
+            assert scoreLogList != null;
             String dateString = formatter.format(scoreLogList.get(0).getTime());
             holder.getTimeText().setText(dateString);
 
