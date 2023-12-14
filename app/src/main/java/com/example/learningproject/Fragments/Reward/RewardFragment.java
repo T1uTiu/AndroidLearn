@@ -153,7 +153,7 @@ public class RewardFragment extends Fragment {
                 this.rewardTimesText = itemView.findViewById(R.id.reward_progress_text);
                 this.rewardCheck = itemView.findViewById(R.id.reward_check);
                 this.rewardCheck.setOnCheckedChangeListener((compoundButton, b) -> {
-                    int idx = getAdapterPosition();
+                    int idx = getBindingAdapterPosition();
                     Reward reward = rewards.get(idx);
                     if(b){
                         if(RewardManager.getInstance().finishReward(reward, idx)){

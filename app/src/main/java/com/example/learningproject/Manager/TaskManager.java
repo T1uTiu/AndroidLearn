@@ -326,14 +326,14 @@ public class TaskManager {
         calendar.setTimeInMillis(info.get("last_refresh_week"));
         int lastRefreshWeek = calendar.get(Calendar.WEEK_OF_YEAR);
         if(curDay != lastRefreshDay){
-            refreshDayTask();
+            refreshDayTask(curDay-lastRefreshDay);
         }
         if(curWeek != lastRefreshWeek){
-            refreshWeekTask();
+            refreshWeekTask(curWeek-lastRefreshWeek);
         }
     }
     @SuppressWarnings("ConstantConditions")
-    public void refreshDayTask(){
+    public void refreshDayTask(int days){
         HashMap<Long, Integer> unfinishedTask = new HashMap<>();
         for(Task task : curDayTaskList) {
             if(task.isAccumulative()){
@@ -344,7 +344,7 @@ public class TaskManager {
         for(Task task : dayTaskList) {
             Task cloneTask = task.clone();
             if(unfinishedTask.containsKey(cloneTask.getId())){
-                cloneTask.setTotalTimes(cloneTask.getTotalTimes() + unfinishedTask.get(cloneTask.getId()));
+                cloneTask.setTotalTimes(cloneTask.getTotalTimes()*days + unfinishedTask.get(cloneTask.getId()));
             }
             curDayTaskList.add(cloneTask);
         }
@@ -352,7 +352,7 @@ public class TaskManager {
         saveFileData(TaskType.EVERYDAY);
     }
     @SuppressWarnings("ConstantConditions")
-    public void refreshWeekTask(){
+    public void refreshWeekTask(int weeks){
         HashMap<Long, Integer> unfinishedTask = new HashMap<>();
         for(Task task : curWeekTaskList) {
             if(task.isAccumulative()){
@@ -363,7 +363,7 @@ public class TaskManager {
         for(Task task : weekTaskList) {
             Task cloneTask = task.clone();
             if(unfinishedTask.containsKey(cloneTask.getId())){
-                cloneTask.setTotalTimes(cloneTask.getTotalTimes() + unfinishedTask.get(cloneTask.getId()));
+                cloneTask.setTotalTimes(cloneTask.getTotalTimes()*weeks + unfinishedTask.get(cloneTask.getId()));
             }
             curWeekTaskList.add(cloneTask);
         }

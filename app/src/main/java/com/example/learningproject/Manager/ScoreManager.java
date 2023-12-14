@@ -29,8 +29,12 @@ public class ScoreManager {
         }
         return instance;
     }
-    final String[] filename = {"score_log_group", "score_log_group_key", "current_score", "current_income", "current_outcome"};
+    final String[] filename = {"score_log_group", "score_log_group_key",
+            "current_score", "current_income", "current_outcome",
+            "daily_income", "daily_outcome"};
     HashMap<Integer, List<ScoreLog>> scoreLogGroup = new HashMap<>(); // 以每日零点为键值，记录每一天的积分记录
+    HashMap<Integer, Integer> dailyIncome = new HashMap<>(); // 以每日零点为键值，记录每一天的收入
+    HashMap<Integer, Integer> dailyOutcome = new HashMap<>(); // 以每日零点为键值，记录每一天的支出
     List<Integer> scoreLogGroupKeyList = new ArrayList<>(); // 记录所有的键值，方便按下标遍历
     Integer currentScore = 0, currentIncome = 0, currentOutcome = 0;
     Context context;
@@ -71,6 +75,12 @@ public class ScoreManager {
                     case 4:
                         this.currentOutcome = (Integer) ois.readObject();
                         break;
+                    case 5:
+                        this.dailyIncome = (HashMap<Integer, Integer>) ois.readObject();
+                        break;
+                    case 6:
+                        this.dailyOutcome = (HashMap<Integer, Integer>) ois.readObject();
+                        break;
                 }
 
             }catch (IOException | ClassNotFoundException e){
@@ -97,6 +107,12 @@ public class ScoreManager {
                         break;
                     case 4:
                         oos.writeObject(currentOutcome);
+                        break;
+                    case 5:
+                        oos.writeObject(dailyIncome);
+                        break;
+                    case 6:
+                        oos.writeObject(dailyOutcome);
                         break;
                 }
                 Log.d("ScoreManager", "保存成功");
@@ -125,6 +141,14 @@ public class ScoreManager {
         return currentOutcome;
     }
 
+    public HashMap<Integer, Integer> getDailyIncome() {
+        return dailyIncome;
+    }
+
+    public HashMap<Integer, Integer> getDailyOutcome() {
+        return dailyOutcome;
+    }
+
     public void addScoreLog(int score, String name){
         String dateString = dateFormat.format(System.currentTimeMillis());
         int date = Integer.parseInt(dateString);
@@ -140,10 +164,24 @@ public class ScoreManager {
             scoreLogGroup.put(date, scoreLogList);
             scoreLogGroupKeyList.add(date);
         }
-        // 更新current
+        // 更新current, dailyIncome, dailyOutcome
         currentScore += score;
-        if(score > 0)currentIncome += score;
-        else currentOutcome -= score;
+        if(score > 0){
+            currentIncome += score;
+            if(dailyIncome.containsValue(date)){
+                dailyIncome.put(date, dailyIncome.get(date)+score);
+            }else{
+                dailyIncome.put(date, score);
+            }
+        }
+        else{
+            currentOutcome -= score;
+            if(dailyOutcome.containsValue(date)){
+                dailyOutcome.put(date, dailyOutcome.get(date)-score);
+            }else{
+                dailyOutcome.put(date, -score);
+            }
+        }
         for(ScoreLogObserver observer : scoreLogObservers){
             observer.onScoreLogChange(method, score);
         }

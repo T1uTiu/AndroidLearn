@@ -25,7 +25,7 @@ class TypeSpinnerAdapter(private val context: Context, private val types: Array<
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
         val inflater = LayoutInflater.from(context)
         val itemView = inflater.inflate(R.layout.listitem_type_spinner, p2, false)
-        val textView = itemView.findViewById<TextView>(R.id.type_spinner_text)
+        val textView: TextView = itemView.findViewById(R.id.type_spinner_text)
         textView.text = types[p0]
         return itemView
     }
