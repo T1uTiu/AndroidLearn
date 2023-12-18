@@ -14,7 +14,7 @@
         android:layout_gravity="bottom|end"
         android:backgroundTint="?attr/colorPrimary"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="66dp"
+        android:layout_marginBottom="75dp"
         android:clickable="true"
         android:contentDescription="@string/bill_title"
         android:focusable="true"
@@ -23,7 +23,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="?android:attr/colorBackground"
         android:paddingStart="10dp"
         android:paddingTop="10dp"
@@ -126,32 +126,52 @@
                 android:layout_marginBottom="10dp"
                 app:cardCornerRadius="10dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/stats_bill_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/chart_title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_gravity="center"
+                        android:text="@string/surplus_chart_title" />
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/stats_line_chart"
+                        android:id="@+id/stats_surplus_chart"
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
-                        android:layout_marginTop="10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/stats_bill_title" />
+                        android:layout_marginTop="10dp" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:cardCornerRadius="10dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/income_outcome_chart_title" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/stats_income_outcome_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginTop="10dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

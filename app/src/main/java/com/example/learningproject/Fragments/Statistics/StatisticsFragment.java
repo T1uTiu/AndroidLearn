@@ -1,6 +1,7 @@
 package com.example.learningproject.Fragments.Statistics;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,10 +22,14 @@ import com.example.learningproject.Model.ScoreLog;
 import com.example.learningproject.R;
 import com.example.learningproject.Utils.ScoreLogXAxisValueFormatter;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -38,9 +43,11 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
 
     View rootView;
     TextView currentIncomeText, currentOutcomeText, currentScoreText;
-    BarDataSet scoreLogDataSet;
+    BarDataSet surplusDataSet;
+    LineDataSet incomeDataSet, outcomeDataSet;
     FloatingActionButton toCalendarStatsBtn;
     BarChart surplusChart;
+    LineChart incomeOutcomeChart;
     ScoreLogXAxisValueFormatter xAxisValueFormatter;
     ActivityResultLauncher<Intent> activityResultLauncher;
     int chartTotalDays = 15;
@@ -84,8 +91,11 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
     }
     void initChart(){
         HashMap<Integer, List<ScoreLog>> scoreLogGroup = ScoreManager.getInstance().getScoreLogGroup();
-        surplusChart = rootView.findViewById(R.id.stats_line_chart);
-        List<BarEntry> entries = new ArrayList<>();
+        surplusChart = rootView.findViewById(R.id.stats_surplus_chart);
+        incomeOutcomeChart = rootView.findViewById(R.id.stats_income_outcome_chart);
+        List<BarEntry> surplusEntries = new ArrayList<>();
+        List<Entry> incomeEntries = new ArrayList<>();
+        List<Entry> outcomeEntries = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         // 统计的第一天
         calendar.add(Calendar.DATE, -chartTotalDays+1);
@@ -97,19 +107,37 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
             int income = ScoreManager.getInstance().getDailyIncome().getOrDefault(key, 0);
             int outcome = ScoreManager.getInstance().getDailyOutcome().getOrDefault(key, 0);
             int surplus = income-outcome;
-            entries.add(new BarEntry(i, surplus));
+            incomeEntries.add(new Entry(i, income));
+            outcomeEntries.add(new Entry(i, -outcome));
+            surplusEntries.add(new BarEntry(i, surplus));
             // 前一天
             calendar.add(Calendar.DATE, 1);
         }
-        scoreLogDataSet = new BarDataSet(entries, "结余");
-        scoreLogDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.purple_500));
-        BarData lineData = new BarData(scoreLogDataSet);
+        surplusDataSet = new BarDataSet(surplusEntries, "结余");
+        surplusDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.purple_500));
+
+        incomeDataSet = new LineDataSet(incomeEntries, "收入");
+        incomeDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.income));
+
+        outcomeDataSet = new LineDataSet(outcomeEntries, "支出");
+        outcomeDataSet.setColor(ContextCompat.getColor(rootView.getContext(), R.color.outcome));
+
+        BarData lineData = new BarData(surplusDataSet);
         surplusChart.getXAxis().setValueFormatter(xAxisValueFormatter);
         surplusChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         surplusChart.getXAxis().setLabelRotationAngle(-60);
         surplusChart.setDescription(null);
         surplusChart.setData(lineData);
         surplusChart.invalidate();
+
+        LineData incomeOutcomeData = new LineData(incomeDataSet);
+        incomeOutcomeData.addDataSet(outcomeDataSet);
+        incomeOutcomeChart.getXAxis().setValueFormatter(xAxisValueFormatter);
+        incomeOutcomeChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        incomeOutcomeChart.getXAxis().setLabelRotationAngle(-60);
+        incomeOutcomeChart.setDescription(null);
+        incomeOutcomeChart.setData(incomeOutcomeData);
+        incomeOutcomeChart.invalidate();
     }
     private void initOverviewCard() {
         currentIncomeText = rootView.findViewById(R.id.stats_sum_of_income_text);
@@ -123,11 +151,20 @@ public class StatisticsFragment extends Fragment implements ScoreLogObserver {
 
     @Override
     public void onScoreLogChange(int method, int score) {
-        BarEntry e = scoreLogDataSet.getValues().get(chartTotalDays-1);
+        BarEntry e = surplusDataSet.getValues().get(chartTotalDays-1);
         e.setY(e.getY()+score);
-
         surplusChart.notifyDataSetChanged();
         surplusChart.invalidate();
+
+        if(score > 0){
+            Entry incomeEntry = incomeDataSet.getValues().get(chartTotalDays-1);
+            incomeEntry.setY(incomeEntry.getY()+score);
+        }else{
+            Entry outcomeEntry = outcomeDataSet.getValues().get(chartTotalDays-1);
+            outcomeEntry.setY(outcomeEntry.getY()+score);
+        }
+        incomeOutcomeChart.notifyDataSetChanged();
+        incomeOutcomeChart.invalidate();
 
         if(score > 0){
             currentIncomeText.setText(String.valueOf(ScoreManager.getInstance().getCurrentIncome()));

@@ -20,7 +20,8 @@
     <string name="expenditure">支出</string>
     <string name="income">收入</string>
     <string name="bill_title">账单</string>
-    <string name="chart_title">近15天汇总</string>
+    <string name="surplus_chart_title">结余汇总</string>
+    <string name="income_outcome_chart_title">收支汇总</string>
     <string name="time">时间</string>
     <string name="surplus">结余</string>
     <string name="today_stats">统计今日</string>

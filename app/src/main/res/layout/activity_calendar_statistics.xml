@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:background="?android:attr/colorBackground"
-    android:padding="15dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.CalendarStatisticsActivity">
 
-    <com.haibin.calendarview.CalendarView
-        android:id="@+id/statistics_calendar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:month_view="com.example.learningproject.Utils.StatisticsMonthView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/calendar_stats_bill_recycler_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/statistics_calendar"
-        android:layout_marginTop="15dp" />
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        android:orientation="vertical">
+
+        <com.haibin.calendarview.CalendarView
+            android:id="@+id/statistics_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:month_view="com.example.learningproject.Utils.StatisticsMonthView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/calendar_stats_bill_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" >
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

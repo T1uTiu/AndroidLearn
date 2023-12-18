@@ -25,13 +25,13 @@ class CalendarStatisticsActivity : AppCompatActivity()
         , CalendarView.OnCalendarSelectListener {
     private lateinit var adapter : ScoreLogAdapter
     private lateinit var statsCalendar: CalendarView
+    private var toolbarDateFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
     private var selectDate: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar_statistics)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "历史账单"
         statsCalendar = findViewById(R.id.statistics_calendar)
 
         initBill()
@@ -46,6 +46,7 @@ class CalendarStatisticsActivity : AppCompatActivity()
         recyclerView.layoutManager = LinearLayoutManager(this)
         val formatter = ScoreManager.getInstance().dateFormat
         selectDate = statsCalendar.selectedCalendar.timeInMillis
+        supportActionBar?.title = toolbarDateFormat.format(selectDate)
         val date = formatter.format(selectDate).toInt()
         adapter = ScoreLogAdapter(date, this)
         recyclerView.adapter = adapter
@@ -58,6 +59,7 @@ class CalendarStatisticsActivity : AppCompatActivity()
     override fun onCalendarSelect(calendar: Calendar?, isClick: Boolean) {
         val formatter = ScoreManager.getInstance().dateFormat
         selectDate = calendar!!.timeInMillis
+        supportActionBar?.title = toolbarDateFormat.format(selectDate)
         val date = formatter.format(selectDate).toInt()
         adapter.date = date
         adapter.notifyDataSetChanged()
